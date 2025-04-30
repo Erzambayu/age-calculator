@@ -1,0 +1,377 @@
+/* Custom styling to enhance Tailwind CSS */
+
+/* Calendar picker styling */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.5);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 0.7;
+  transform: scale(1.1);
+}
+
+.dark input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+
+/* Smooth transitions */
+.transition {
+  transition-property: background-color, border-color, color, fill, stroke, transform, box-shadow;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
+}
+
+/* Enhanced focus states */
+input:focus, button:focus, select:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+  outline-offset: 2px;
+}
+
+/* Card hover effects */
+.card-hover {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Button hover animations */
+button {
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  transform: scale(1.05);
+}
+
+button:active {
+  transform: translateY(1px);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: #374151;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #4B5563;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #6B7280;
+}
+
+/* Improved responsiveness */
+@media (max-width: 768px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  h1 {
+    font-size: 1.5rem !important;
+  }
+  
+  .grid-cols-3 {
+    grid-template-columns: 1fr;
+  }
+  
+  .gap-3 {
+    gap: 0.75rem;
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.5s ease-out;
+}
+
+/* Custom tab styling */
+.tab-active {
+  position: relative;
+}
+
+.tab-active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(to right, #3b82f6, #60a5fa);
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+.dark .tab-active::after {
+  background-color: #60A5FA;
+}
+
+/* Animasi untuk hasil perhitungan */
+#result {
+  animation: fadeIn 0.5s ease-in;
+}
+
+/* Styling untuk detail umur */
+#ageDetails p {
+  padding: 0.5rem;
+  margin: 0.25rem 0;
+  background: rgba(59, 130, 246, 0.1);
+  border-radius: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+#ageDetails p:hover {
+  background: rgba(59, 130, 246, 0.2);
+  transform: translateX(5px);
+}
+
+/* Styling untuk zodiak */
+#zodiacInfo {
+  font-style: italic;
+}
+
+#zodiacInfo p {
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  background: rgba(139, 92, 246, 0.1);
+  border-radius: 0.5rem;
+}
+
+/* Styling untuk hari ulang tahun */
+#birthdayDay {
+  font-size: 1.25rem;
+  color: #3b82f6;
+  font-weight: 600;
+}
+
+/* Styling untuk countdown */
+#countdown {
+  animation: pulse-slow 2s infinite;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  
+  #ageDetails p {
+    font-size: 0.9rem;
+  }
+}
+
+/* Dark mode adjustments */
+.dark #ageDetails p {
+  background: rgba(59, 130, 246, 0.2);
+}
+
+.dark #zodiacInfo p {
+  background: rgba(139, 92, 246, 0.2);
+}
+
+/* Animasi untuk tombol share dan export */
+#shareBtn, #exportBtn {
+  position: relative;
+  overflow: hidden;
+}
+
+#shareBtn::after, #exportBtn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  transition: transform 0.3s ease;
+}
+
+#shareBtn:hover::after, #exportBtn:hover::after {
+  transform: scale(1.1);
+}
+
+/* Custom Themes */
+[data-theme="ocean"] {
+  --primary-color: rgb(6, 182, 212);
+  --secondary-color: rgb(59, 130, 246);
+  --accent-color: rgb(20, 184, 166);
+}
+
+[data-theme="forest"] {
+  --primary-color: rgb(34, 197, 94);
+  --secondary-color: rgb(16, 185, 129);
+  --accent-color: rgb(132, 204, 22);
+}
+
+[data-theme="sunset"] {
+  --primary-color: rgb(249, 115, 22);
+  --secondary-color: rgb(239, 68, 68);
+  --accent-color: rgb(234, 179, 8);
+}
+
+[data-theme="lavender"] {
+  --primary-color: rgb(147, 51, 234);
+  --secondary-color: rgb(139, 92, 246);
+  --accent-color: rgb(79, 70, 229);
+}
+
+/* Apply theme colors */
+[data-theme] .btn-primary {
+  background-color: var(--primary-color);
+}
+
+[data-theme] .btn-secondary {
+  background-color: var(--secondary-color);
+}
+
+[data-theme] .text-accent {
+  color: var(--accent-color);
+}
+
+/* Timeline styles */
+.timeline-point {
+  transition: all 0.3s ease;
+}
+
+.timeline-point:hover {
+  transform: scale(1.2);
+}
+
+/* Print styles */
+@media print {
+  body {
+    background: white;
+  }
+  
+  .no-print {
+    display: none;
+  }
+  
+  .print-only {
+    display: block;
+  }
+  
+  #result {
+    page-break-inside: avoid;
+  }
+}
+
+/* Responsive Timeline */
+@media (max-width: 640px) {
+  #timeline {
+    overflow-x: scroll;
+    padding-bottom: 1rem;
+  }
+  
+  .timeline-container {
+    min-width: 600px;
+  }
+}
+
+/* Calculation History Styles */
+#calculationHistory {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+}
+
+#calculationHistory::-webkit-scrollbar {
+  width: 6px;
+}
+
+#calculationHistory::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#calculationHistory::-webkit-scrollbar-thumb {
+  background-color: rgba(156, 163, 175, 0.5);
+  border-radius: 3px;
+}
+
+.history-item {
+  opacity: 1;
+  transform: translateX(0);
+  transition: all 0.3s ease;
+}
+
+.history-item.deleting {
+  opacity: 0;
+  transform: translateX(-100%);
+}
+
+.history-item:hover .delete-button {
+  opacity: 1;
+}
+
+.delete-button {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+/* Dark mode adjustments for history */
+.dark #calculationHistory::-webkit-scrollbar-thumb {
+  background-color: rgba(156, 163, 175, 0.3);
+}
+
+/* Empty state styling */
+.history-empty-state {
+  padding: 2rem;
+  text-align: center;
+  color: #6B7280;
+}
+
+.dark .history-empty-state {
+  color: #9CA3AF;
+}
