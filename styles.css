@@ -1,0 +1,772 @@
+/* Enhanced Modern Styling for Interactive Age Calculator */
+
+/* Reset and base styles */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  overflow-x: hidden;
+  font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Enhanced Particle Background */
+#particles-js {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: -1;
+}
+
+/* Custom Scrollbar for modern look */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(45deg, #8b5cf6, #ec4899);
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(45deg, #7c3aed, #db2777);
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: rgba(55, 65, 81, 0.3);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: linear-gradient(45deg, #6366f1, #8b5cf6);
+}
+
+/* Enhanced Glass morphism effect */
+.backdrop-blur-md {
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+}
+
+/* Calendar picker enhanced styling */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.5) sepia(1) saturate(5) hue-rotate(240deg);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 4px;
+  border-radius: 6px;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 0.8;
+  transform: scale(1.2);
+  background: rgba(139, 92, 246, 0.1);
+}
+
+.dark input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1) sepia(1) saturate(5) hue-rotate(180deg);
+}
+
+/* Enhanced Focus States with colorful rings */
+input:focus, button:focus, select:focus {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.3);
+  outline-offset: 2px;
+}
+
+/* Tab Panel System */
+.tab-content {
+  position: relative;
+}
+
+.tab-panel {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.tab-panel.hidden {
+  opacity: 0;
+  transform: translateY(20px);
+  pointer-events: none;
+}
+
+.tab-panel.active {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: all;
+}
+
+/* Enhanced Card hover effects with 3D transform */
+.card-hover {
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-8px) rotateY(5deg) rotateX(5deg);
+  box-shadow: 0 20px 40px rgba(139, 92, 246, 0.2);
+}
+
+/* Advanced Button Animations */
+button {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+button:hover::before {
+  left: 100%;
+}
+
+button:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+button:active {
+  transform: translateY(0px) scale(0.98);
+}
+
+/* Gradient text animations */
+.bg-clip-text {
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: gradientShift 3s ease-in-out infinite;
+}
+
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* Enhanced Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes slideUp {
+  from { 
+    transform: translateY(40px) rotateX(45deg); 
+    opacity: 0; 
+  }
+  to { 
+    transform: translateY(0) rotateX(0deg); 
+    opacity: 1; 
+  }
+}
+
+@keyframes slideDown {
+  from { 
+    transform: translateY(-40px) rotateX(-45deg); 
+    opacity: 0; 
+  }
+  to { 
+    transform: translateY(0) rotateX(0deg); 
+    opacity: 1; 
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.8) rotate(-5deg);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+@keyframes float {
+  0%, 100% { 
+    transform: translateY(0px) rotate(0deg); 
+  }
+  25% { 
+    transform: translateY(-10px) rotate(2deg); 
+  }
+  75% { 
+    transform: translateY(-5px) rotate(-2deg); 
+  }
+}
+
+@keyframes glow {
+  0% { 
+    box-shadow: 0 0 5px rgba(139, 92, 246, 0.3), 0 0 10px rgba(139, 92, 246, 0.2); 
+  }
+  100% { 
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.6), 0 0 30px rgba(139, 92, 246, 0.4), 0 0 40px rgba(139, 92, 246, 0.2); 
+  }
+}
+
+@keyframes sparkle {
+  0%, 100% { 
+    opacity: 1; 
+    transform: scale(1) rotate(0deg); 
+  }
+  50% { 
+    opacity: 0.7; 
+    transform: scale(1.3) rotate(180deg); 
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { 
+    transform: scale(1); 
+    opacity: 1; 
+  }
+  50% { 
+    transform: scale(1.1); 
+    opacity: 0.7; 
+  }
+}
+
+/* Enhanced Tab Styling */
+.tab-active {
+  position: relative;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(236, 72, 153, 0.1));
+}
+
+.tab-active::before {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #8b5cf6, #ec4899, #3b82f6);
+  border-radius: 2px;
+  animation: slideInTab 0.4s ease-out;
+}
+
+@keyframes slideInTab {
+  from {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+  to {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+
+/* Fun Facts styling with hover effects */
+#funFacts > div {
+  transition: all 0.3s ease;
+  border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+#funFacts > div:hover {
+  transform: translateX(10px) scale(1.02);
+  box-shadow: 0 8px 25px rgba(139, 92, 246, 0.15);
+  border-color: rgba(139, 92, 246, 0.4);
+}
+
+/* Age Details Cards Animation */
+#ageDetails > div {
+  padding: 12px 16px;
+  margin: 8px 0;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+  border-radius: 12px;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+#ageDetails > div::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transition: left 0.6s;
+}
+
+#ageDetails > div:hover::before {
+  left: 100%;
+}
+
+#ageDetails > div:hover {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(139, 92, 246, 0.2));
+  transform: translateX(12px) scale(1.02);
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.2);
+  border-color: rgba(59, 130, 246, 0.4);
+}
+
+/* Zodiac Info Enhanced */
+#zodiacInfo {
+  font-style: italic;
+}
+
+#zodiacInfo > div {
+  margin: 12px 0;
+  padding: 16px;
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.1), rgba(147, 51, 234, 0.1));
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(236, 72, 153, 0.2);
+}
+
+#zodiacInfo > div:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 25px rgba(236, 72, 153, 0.2);
+  border-color: rgba(236, 72, 153, 0.4);
+}
+
+/* Birthday countdown styling */
+#countdown {
+  font-size: 1.25rem;
+  background: linear-gradient(135deg, #ec4899, #8b5cf6);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-weight: 700;
+  text-align: center;
+  animation: pulse 2s infinite;
+}
+
+/* Enhanced theme variations */
+:root {
+  --primary-color: #8b5cf6;
+  --secondary-color: #ec4899;
+  --accent-color: #3b82f6;
+}
+
+[data-theme="ocean"] {
+  --primary-color: #0ea5e9;
+  --secondary-color: #06b6d4;
+  --accent-color: #0891b2;
+}
+
+[data-theme="forest"] {
+  --primary-color: #10b981;
+  --secondary-color: #059669;
+  --accent-color: #047857;
+}
+
+[data-theme="sunset"] {
+  --primary-color: #f59e0b;
+  --secondary-color: #d97706;
+  --accent-color: #b45309;
+}
+
+[data-theme="lavender"] {
+  --primary-color: #8b5cf6;
+  --secondary-color: #7c3aed;
+  --accent-color: #6d28d9;
+}
+
+[data-theme="neon"] {
+  --primary-color: #06ffa5;
+  --secondary-color: #00d4ff;
+  --accent-color: #ff006e;
+}
+
+/* Apply theme colors to elements */
+.theme-ocean {
+  --tw-gradient-from: #0ea5e9;
+  --tw-gradient-to: #06b6d4;
+}
+
+.theme-forest {
+  --tw-gradient-from: #10b981;
+  --tw-gradient-to: #059669;
+}
+
+.theme-sunset {
+  --tw-gradient-from: #f59e0b;
+  --tw-gradient-to: #d97706;
+}
+
+.theme-lavender {
+  --tw-gradient-from: #8b5cf6;
+  --tw-gradient-to: #7c3aed;
+}
+
+.theme-neon {
+  --tw-gradient-from: #06ffa5;
+  --tw-gradient-to: #00d4ff;
+}
+
+/* Enhanced dark mode text visibility */
+.dark {
+  color-scheme: dark;
+}
+
+.dark body {
+  color: #f9fafb;
+}
+
+.dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
+  color: #f9fafb !important;
+}
+
+.dark p {
+  color: #d1d5db !important;
+}
+
+.dark .text-gray-800 {
+  color: #f9fafb !important;
+}
+
+.dark .text-gray-700 {
+  color: #e5e7eb !important;
+}
+
+.dark .text-gray-600 {
+  color: #d1d5db !important;
+}
+
+.dark .text-gray-500 {
+  color: #9ca3af !important;
+}
+
+/* Dark mode button and input styling */
+.dark button {
+  color: #f9fafb;
+}
+
+.dark input, .dark select, .dark textarea {
+  color: #f9fafb !important;
+  background-color: #374151;
+  border-color: #4b5563;
+}
+
+.dark input::placeholder {
+  color: #9ca3af;
+}
+
+/* Dark mode card backgrounds */
+.dark .bg-white {
+  background-color: #1f2937 !important;
+}
+
+.dark .bg-gray-50 {
+  background-color: #374151 !important;
+}
+
+.dark .bg-gray-100 {
+  background-color: #4b5563 !important;
+}
+
+/* Dark mode borders */
+.dark .border-gray-300 {
+  border-color: #4b5563 !important;
+}
+
+.dark .border-gray-200 {
+  border-color: #374151 !important;
+}
+
+/* Enhanced backdrop blur for dark mode */
+.dark .backdrop-blur-md {
+  background-color: rgba(31, 41, 55, 0.8) !important;
+}
+
+/* Tab active state in dark mode */
+.dark .tab-active {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(236, 72, 153, 0.2)) !important;
+  color: #a855f7 !important;
+}
+
+/* History section enhancements */
+#calculationHistory {
+  max-height: 400px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(139, 92, 246, 0.5) transparent;
+}
+
+.history-item {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 16px;
+  padding: 20px;
+  margin: 12px 0;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.dark .history-item {
+  background: linear-gradient(135deg, rgba(55, 65, 81, 0.9), rgba(55, 65, 81, 0.7));
+  border-color: rgba(139, 92, 246, 0.3);
+}
+
+.history-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(180deg, #8b5cf6, #ec4899);
+  transition: width 0.3s ease;
+}
+
+.history-item:hover::before {
+  width: 8px;
+}
+
+.history-item:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 12px 35px rgba(139, 92, 246, 0.2);
+  border-color: rgba(139, 92, 246, 0.4);
+}
+
+.history-item.deleting {
+  animation: slideOutRight 0.4s ease-in forwards;
+}
+
+@keyframes slideOutRight {
+  to {
+    transform: translateX(100%) scale(0.8);
+    opacity: 0;
+  }
+}
+
+.delete-button {
+  opacity: 0;
+  transition: all 0.3s ease;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  transform: scale(0.8);
+}
+
+.history-item:hover .delete-button {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.delete-button:hover {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  transform: scale(1.1);
+}
+
+/* Statistics cards enhanced */
+.stat-card {
+  background: linear-gradient(135deg, var(--card-gradient-start), var(--card-gradient-end));
+  border-radius: 20px;
+  padding: 24px;
+  text-align: center;
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.6s;
+}
+
+.stat-card:hover::before {
+  transform: translateX(100%);
+}
+
+.stat-card:hover {
+  transform: translateY(-8px) scale(1.05);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+}
+
+/* Floating elements */
+.floating-element {
+  animation: float 6s ease-in-out infinite;
+}
+
+.floating-element:nth-child(2) {
+  animation-delay: 2s;
+}
+
+.floating-element:nth-child(3) {
+  animation-delay: 4s;
+}
+
+/* Birthday overlay animation */
+#birthdayOverlay {
+  backdrop-filter: blur(10px);
+  animation: fadeIn 0.5s ease;
+}
+
+#birthdayOverlay > div {
+  animation: scaleIn 0.6s ease 0.2s both;
+}
+
+/* Timeline styles */
+.timeline-item {
+  position: relative;
+  padding: 20px 0;
+  border-left: 3px solid transparent;
+  border-image: linear-gradient(180deg, #8b5cf6, #ec4899) 1;
+  margin-left: 20px;
+  transition: all 0.3s ease;
+}
+
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -8px;
+  top: 30px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #8b5cf6, #ec4899);
+  box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.2);
+  transition: all 0.3s ease;
+}
+
+.timeline-item:hover::before {
+  transform: scale(1.5);
+  box-shadow: 0 0 0 8px rgba(139, 92, 246, 0.3);
+}
+
+.timeline-item:hover {
+  transform: translateX(10px);
+  border-image: linear-gradient(180deg, #ec4899, #8b5cf6) 1;
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  h1 {
+    font-size: 2rem !important;
+    line-height: 1.2;
+  }
+  
+  .tab-panel {
+    padding: 1rem;
+  }
+  
+  .grid-cols-3 {
+    grid-template-columns: 1fr;
+  }
+  
+  .floating-element {
+    display: none;
+  }
+  
+  #particles-js {
+    opacity: 0.3;
+  }
+}
+
+@media (max-width: 640px) {
+  .tab-content nav {
+    flex-direction: column;
+  }
+  
+  .tab-content nav button {
+    font-size: 0.9rem;
+    padding: 12px;
+  }
+  
+  .stat-card {
+    padding: 16px;
+  }
+  
+  .history-item {
+    padding: 16px;
+  }
+  
+  .timeline-item {
+    margin-left: 15px;
+  }
+}
+
+/* Print styles */
+@media print {
+  body {
+    background: white !important;
+  }
+  
+  #particles-js,
+  .floating-element,
+  .no-print {
+    display: none !important;
+  }
+  
+  .print-only {
+    display: block !important;
+  }
+  
+  #result {
+    box-shadow: none !important;
+    border: 1px solid #ddd;
+  }
+  
+  .backdrop-blur-md {
+    backdrop-filter: none;
+    background: white;
+  }
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .backdrop-blur-md {
+    backdrop-filter: none;
+    background: rgba(255, 255, 255, 0.95);
+  }
+  
+  .dark .backdrop-blur-md {
+    background: rgba(17, 24, 39, 0.95);
+  }
+}
+
+/* Custom selection styling */
+::selection {
+  background: linear-gradient(135deg, #8b5cf6, #ec4899);
+  color: white;
+}
+
+::-moz-selection {
+  background: linear-gradient(135deg, #8b5cf6, #ec4899);
+  color: white;
+}
