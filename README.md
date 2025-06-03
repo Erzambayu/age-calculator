@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # 🎂 Kalkulator Umur Interaktif | Interactive Age Calculator
 
 > **Aplikasi web kalkulator umur modern dengan fitur interaktif, visualisasi data, dan antarmuka yang menakjubkan**
