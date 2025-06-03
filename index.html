@@ -188,13 +188,13 @@
         <button id="tabBirth" class="flex-1 py-4 px-6 font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300" data-lang="tab_birth">
           <i class="fas fa-calendar-day mr-2"></i> Cari Tanggal Lahir
         </button>
-        <button id="tabTimeline" class="flex-1 py-4 px-6 font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300">
+        <button id="tabTimeline" class="flex-1 py-4 px-6 font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300" data-lang="tab_timeline">
           <i class="fas fa-timeline mr-2"></i> Timeline Kehidupan
         </button>
-        <button id="tabComparison" class="flex-1 py-4 px-6 font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300">
+        <button id="tabComparison" class="flex-1 py-4 px-6 font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300" data-lang="tab_comparison">
           <i class="fas fa-users mr-2"></i> Perbandingan
         </button>
-        <button id="tabStats" class="flex-1 py-4 px-6 font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300">
+        <button id="tabStats" class="flex-1 py-4 px-6 font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300" data-lang="tab_stats">
           <i class="fas fa-chart-bar mr-2"></i> Statistik
         </button>
       </div>
@@ -209,8 +209,8 @@
           <div class="bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-2xl shadow-2xl p-8 animate-scale-in">
             <div class="text-center mb-8">
               <lottie-player src="https://assets5.lottiefiles.com/packages/lf20_touohxv0.json" background="transparent" speed="1" style="width: 120px; height: 120px; margin: 0 auto;" loop autoplay></lottie-player>
-              <h2 class="text-2xl font-bold text-gray-800 dark:text-white mt-4">Masukkan Tanggal Lahir Anda</h2>
-              <p class="text-gray-600 dark:text-gray-300">Temukan perjalanan hidup Anda yang menakjubkan</p>
+              <h2 class="text-2xl font-bold text-gray-800 dark:text-white mt-4" data-lang="birth_finder_title">Masukkan Tanggal Lahir Anda</h2>
+              <p class="text-gray-600 dark:text-gray-300" data-lang="birth_finder_subtitle">Temukan perjalanan hidup Anda yang menakjubkan</p>
             </div>
 
             <div class="space-y-6">
@@ -235,10 +235,10 @@
               <!-- Quick Calculate Presets -->
               <div class="grid grid-cols-2 gap-3 mt-6">
                 <button onclick="setQuickDate('today')" class="p-3 bg-gradient-to-r from-green-400 to-blue-500 text-white rounded-lg hover:scale-105 transition duration-300">
-                  <i class="fas fa-calendar-day mr-2"></i> Hari Ini
+                  <i class="fas fa-calendar-day mr-2"></i> <span data-lang="quick_today">Hari Ini</span>
                 </button>
                 <button onclick="setQuickDate('yesterday')" class="p-3 bg-gradient-to-r from-yellow-400 to-orange-500 text-white rounded-lg hover:scale-105 transition duration-300">
-                  <i class="fas fa-calendar-minus mr-2"></i> Kemarin
+                  <i class="fas fa-calendar-minus mr-2"></i> <span data-lang="quick_yesterday">Kemarin</span>
                 </button>
               </div>
             </div>
@@ -339,22 +339,22 @@
             <div class="bg-gradient-to-br from-red-400 to-pink-500 text-white p-6 rounded-2xl text-center shadow-xl">
               <i class="fas fa-heartbeat text-3xl mb-3"></i>
               <div class="text-2xl font-bold" id="heartbeats">2,500,000,000</div>
-              <div class="text-sm opacity-90">Detak Jantung</div>
+              <div class="text-sm opacity-90" data-lang="heartbeats">Detak Jantung</div>
             </div>
             <div class="bg-gradient-to-br from-blue-400 to-cyan-500 text-white p-6 rounded-2xl text-center shadow-xl">
               <i class="fas fa-lungs text-3xl mb-3"></i>
               <div class="text-2xl font-bold" id="breaths">650,000,000</div>
-              <div class="text-sm opacity-90">Napas</div>
+              <div class="text-sm opacity-90" data-lang="breaths">Napas</div>
             </div>
             <div class="bg-gradient-to-br from-green-400 to-emerald-500 text-white p-6 rounded-2xl text-center shadow-xl">
               <i class="fas fa-moon text-3xl mb-3"></i>
               <div class="text-2xl font-bold" id="sleepHours">75,000</div>
-              <div class="text-sm opacity-90">Jam Tidur</div>
+              <div class="text-sm opacity-90" data-lang="sleep_hours">Jam Tidur</div>
             </div>
             <div class="bg-gradient-to-br from-purple-400 to-indigo-500 text-white p-6 rounded-2xl text-center shadow-xl">
               <i class="fas fa-utensils text-3xl mb-3"></i>
               <div class="text-2xl font-bold" id="meals">75,000</div>
-              <div class="text-sm opacity-90">Makanan</div>
+              <div class="text-sm opacity-90" data-lang="meals">Makanan</div>
             </div>
           </div>
 
@@ -365,19 +365,19 @@
             </h3>
             <div class="flex flex-wrap justify-center gap-4">
               <button onclick="shareToFacebook()" class="bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-xl transition duration-300 transform hover:scale-105">
-                <i class="fab fa-facebook-f mr-2"></i> Facebook
+                <i class="fab fa-facebook-f mr-2"></i> <span data-lang="facebook">Facebook</span>
               </button>
               <button onclick="shareToTwitter()" class="bg-blue-400 hover:bg-blue-500 text-white py-3 px-6 rounded-xl transition duration-300 transform hover:scale-105">
-                <i class="fab fa-twitter mr-2"></i> Twitter
+                <i class="fab fa-twitter mr-2"></i> <span data-lang="twitter">Twitter</span>
               </button>
               <button onclick="shareToWhatsApp()" class="bg-green-500 hover:bg-green-600 text-white py-3 px-6 rounded-xl transition duration-300 transform hover:scale-105">
-                <i class="fab fa-whatsapp mr-2"></i> WhatsApp
+                <i class="fab fa-whatsapp mr-2"></i> <span data-lang="whatsapp">WhatsApp</span>
               </button>
               <button onclick="exportToPDF()" class="bg-red-500 hover:bg-red-600 text-white py-3 px-6 rounded-xl transition duration-300 transform hover:scale-105">
-                <i class="fas fa-file-pdf mr-2"></i> Export PDF
+                <i class="fas fa-file-pdf mr-2"></i> <span data-lang="export_pdf">Export PDF</span>
               </button>
               <button onclick="downloadAsImage()" class="bg-purple-500 hover:bg-purple-600 text-white py-3 px-6 rounded-xl transition duration-300 transform hover:scale-105">
-                <i class="fas fa-image mr-2"></i> Download Gambar
+                <i class="fas fa-image mr-2"></i> <span data-lang="download_image">Download Gambar</span>
               </button>
             </div>
           </div>
@@ -475,10 +475,10 @@
       <div id="timelineCalculator" class="tab-panel hidden">
         <div class="bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-2xl shadow-2xl p-8">
           <div class="text-center mb-8">
-            <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-4">
+            <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-4" data-lang="timeline_title">
               <i class="fas fa-timeline text-purple-500 mr-3"></i> Timeline Kehidupan Anda
             </h2>
-            <p class="text-gray-600 dark:text-gray-300">Jelajahi milestone penting dalam perjalanan hidup Anda</p>
+            <p class="text-gray-600 dark:text-gray-300" data-lang="timeline_subtitle">Jelajahi milestone penting dalam perjalanan hidup Anda</p>
           </div>
           <div id="lifeTimeline" class="space-y-6">
             <!-- Timeline items will be generated here -->
@@ -490,10 +490,10 @@
       <div id="comparisonCalculator" class="tab-panel hidden">
         <div class="bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-2xl shadow-2xl p-8">
           <div class="text-center mb-8">
-            <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-4">
+            <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-4" data-lang="comparison_title">
               <i class="fas fa-users text-blue-500 mr-3"></i> Perbandingan Usia
             </h2>
-            <p class="text-gray-600 dark:text-gray-300">Bandingkan usia Anda dengan tokoh terkenal dan selebriti</p>
+            <p class="text-gray-600 dark:text-gray-300" data-lang="comparison_subtitle">Bandingkan usia Anda dengan tokoh terkenal dan selebriti</p>
           </div>
           <div id="ageComparison" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <!-- Comparison cards will be generated here -->
@@ -505,10 +505,10 @@
       <div id="statsCalculator" class="tab-panel hidden">
         <div class="bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-2xl shadow-2xl p-8">
           <div class="text-center mb-8">
-            <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-4">
+            <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-4" data-lang="stats_title">
               <i class="fas fa-chart-bar text-green-500 mr-3"></i> Statistik Hidup
             </h2>
-            <p class="text-gray-600 dark:text-gray-300">Analisis mendalam tentang perjalanan hidup Anda</p>
+            <p class="text-gray-600 dark:text-gray-300" data-lang="stats_subtitle">Analisis mendalam tentang perjalanan hidup Anda</p>
           </div>
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div>

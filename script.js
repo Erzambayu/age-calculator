@@ -913,6 +913,34 @@ function applyTheme(themeName) {
   root.style.setProperty('--primary-color', colors.primary);
   root.style.setProperty('--secondary-color', colors.secondary);
   root.style.setProperty('--accent-color', colors.accent);
+  
+  // Force re-render of gradients and colors
+  const gradientElements = document.querySelectorAll('.bg-gradient-to-r, .bg-gradient-to-br, .bg-gradient-to-l');
+  gradientElements.forEach(element => {
+    element.style.animation = 'none';
+    element.offsetHeight; // Trigger reflow
+    element.style.animation = null;
+  });
+  
+  // Update button gradients specifically
+  const buttons = document.querySelectorAll('button.bg-gradient-to-r');
+  buttons.forEach(button => {
+    if (button.classList.contains('from-purple-500')) {
+      button.style.background = `linear-gradient(to right, ${colors.primary}, ${colors.secondary})`;
+    }
+  });
+  
+  // Update text gradients
+  const textGradients = document.querySelectorAll('.bg-clip-text');
+  textGradients.forEach(element => {
+    if (element.classList.contains('from-purple-600')) {
+      element.style.background = `linear-gradient(to right, ${colors.primary}, ${colors.secondary}, ${colors.accent})`;
+      element.style.webkitBackgroundClip = 'text';
+      element.style.backgroundClip = 'text';
+    }
+  });
+  
+  console.log(`Theme applied: ${themeName}`, colors);
 }
 
 // Change language

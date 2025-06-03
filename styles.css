@@ -390,6 +390,99 @@ button:active {
   --accent-color: #ff006e;
 }
 
+/* Theme-specific background gradients */
+[data-theme="ocean"] body {
+  background: linear-gradient(135deg, #e0f2fe, #b3e5fc, #81d4fa) !important;
+}
+
+[data-theme="ocean"].dark body {
+  background: linear-gradient(135deg, #0f172a, #1e293b, #334155) !important;
+}
+
+[data-theme="forest"] body {
+  background: linear-gradient(135deg, #f0fdf4, #dcfce7, #bbf7d0) !important;
+}
+
+[data-theme="forest"].dark body {
+  background: linear-gradient(135deg, #14532d, #166534, #15803d) !important;
+}
+
+[data-theme="sunset"] body {
+  background: linear-gradient(135deg, #fffbeb, #fef3c7, #fde68a) !important;
+}
+
+[data-theme="sunset"].dark body {
+  background: linear-gradient(135deg, #451a03, #78350f, #92400e) !important;
+}
+
+[data-theme="lavender"] body {
+  background: linear-gradient(135deg, #faf5ff, #f3e8ff, #e9d5ff) !important;
+}
+
+[data-theme="lavender"].dark body {
+  background: linear-gradient(135deg, #3c1361, #581c87, #6b21a8) !important;
+}
+
+[data-theme="neon"] body {
+  background: linear-gradient(135deg, #0d1117, #161b22, #21262d) !important;
+}
+
+[data-theme="neon"].dark body {
+  background: linear-gradient(135deg, #000000, #0a0a0a, #1a1a1a) !important;
+}
+
+/* Theme-specific button colors */
+[data-theme="ocean"] .bg-gradient-to-r.from-purple-500 {
+  background: linear-gradient(to right, var(--primary-color), var(--secondary-color)) !important;
+}
+
+[data-theme="forest"] .bg-gradient-to-r.from-purple-500 {
+  background: linear-gradient(to right, var(--primary-color), var(--secondary-color)) !important;
+}
+
+[data-theme="sunset"] .bg-gradient-to-r.from-purple-500 {
+  background: linear-gradient(to right, var(--primary-color), var(--secondary-color)) !important;
+}
+
+[data-theme="lavender"] .bg-gradient-to-r.from-purple-500 {
+  background: linear-gradient(to right, var(--primary-color), var(--secondary-color)) !important;
+}
+
+[data-theme="neon"] .bg-gradient-to-r.from-purple-500 {
+  background: linear-gradient(to right, var(--primary-color), var(--secondary-color)) !important;
+}
+
+/* Theme-specific text gradients */
+[data-theme="ocean"] .bg-gradient-to-r.from-purple-600.via-pink-600.to-blue-600 {
+  background: linear-gradient(to right, var(--primary-color), var(--secondary-color), var(--accent-color)) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+}
+
+[data-theme="forest"] .bg-gradient-to-r.from-purple-600.via-pink-600.to-blue-600 {
+  background: linear-gradient(to right, var(--primary-color), var(--secondary-color), var(--accent-color)) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+}
+
+[data-theme="sunset"] .bg-gradient-to-r.from-purple-600.via-pink-600.to-blue-600 {
+  background: linear-gradient(to right, var(--primary-color), var(--secondary-color), var(--accent-color)) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+}
+
+[data-theme="lavender"] .bg-gradient-to-r.from-purple-600.via-pink-600.to-blue-600 {
+  background: linear-gradient(to right, var(--primary-color), var(--secondary-color), var(--accent-color)) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+}
+
+[data-theme="neon"] .bg-gradient-to-r.from-purple-600.via-pink-600.to-blue-600 {
+  background: linear-gradient(to right, var(--primary-color), var(--secondary-color), var(--accent-color)) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+}
+
 /* Apply theme colors to elements */
 .theme-ocean {
   --tw-gradient-from: #0ea5e9;
