@@ -1,199 +1,203 @@
-# 🎂 Kalkulator Umur Interaktif | Interactive Age Calculator
+# The Age Almanac · Chronometry of a Life
 
-> **Aplikasi web kalkulator umur modern dengan fitur interaktif, visualisasi data, dan antarmuka yang menakjubkan**
+> **A quiet chronometry of your life** — kalkulator umur editorial dengan
+> live ticking, life battery, cosmic odometer, biorhythm, dan timeline
+> diam yang terus berdetak.
 
-[![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-Visit_Site-blue)](https://erzambayu.me/age-calculator/)
-[![GitHub Stars](https://img.shields.io/github/stars/Erzambayu/age-calculator?style=social)](https://github.com/Erzambayu/age-calculator)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Live Demo](https://img.shields.io/badge/Live_Demo-Visit-d4a24c?style=flat-square)](https://erzambayu.me/age-calculator/)
+[![License](https://img.shields.io/badge/License-MIT-1c1a16?style=flat-square)](LICENSE)
+[![Stack](https://img.shields.io/badge/Stack-Vanilla_JS_·_CSS-15181f?style=flat-square)]()
 
-![Age Calculator Screenshot](Screenshot%202025-04-21%20100043.png)
+![Screenshot](Screenshot%202025-04-21%20100043.png)
 
-## ✨ Fitur Utama
+---
 
-### 🧮 **Kalkulator Usia Presisi**
-- Perhitungan umur yang akurat hingga hari, jam, menit, dan detik
-- Timeline perjalanan hidup dengan milestone pencapaian
-- Statistik kehidupan personal (detak jantung, napas, jam tidur)
-- Countdown ulang tahun real-time dengan animasi
+## Apa itu
 
-### 📊 **Visualisasi Data Interaktif**
-- **Chart.js Integration**: Grafik lingkaran progress hidup
-- **GSAP Animations**: Animasi halus dan profesional  
-- **Particles.js**: Efek partikel background yang responsif
-- **Life Timeline**: Visualisasi pencapaian hidup
+Sebuah almanak personal yang men-typeset hidupmu seperti halaman majalah
+luxury watchmaking. Kamu kasih satu hari — hari pertamamu — dan ia
+mengembalikan chronometry, kalkulasi orbit, perbandingan kosmik, hingga
+sertifikat PDF.
 
-### 🎨 **Sistem Tema & Dark Mode**
-- **6 Tema Warna**: Default, Ocean, Forest, Sunset, Lavender, Neon
-- **Dark Mode**: Toggle gelap/terang dengan animasi smooth
-- **Responsive Design**: Optimal di semua perangkat
-- **Glass Morphism**: Efek kaca modern pada komponen
+Tidak ada framework. Vanilla HTML + CSS + JS. Berjalan langsung dari
+satu file `index.html`.
 
-### 🌟 **Fitur Interaktif Lanjutan**
-- **5 Tab Navigation**: Age Calculator, Birth Finder, Timeline, Comparison, Statistics
-- **Celebrity Comparison**: Bandingkan usia dengan tokoh terkenal
-- **Zodiac Integration**: Info zodiak lengkap dengan horoskop harian
-- **Personal Statistics**: Estimasi detak jantung, napas, jam tidur
-- **Birthday Celebration**: Animasi confetti otomatis di hari ulang tahun
+## Aesthetic
 
-### 🌍 **Multi-Bahasa & Sharing**
-- **Bilingual**: Indonesia & English dengan switching dinamis
-- **Social Sharing**: Facebook, Twitter, WhatsApp
-- **Export Options**: PDF report & download gambar
-- **History Management**: Riwayat perhitungan dengan localStorage
+- **Tema** — dark "Ink" (default) + light "Paper", switch via tombol `T`
+- **Tipografi** — Fraunces (display serif, variable axes SOFT/WONK) +
+  JetBrains Mono (data) + Inter (body)
+- **Palette** — midnight `#0e1014` · ivory `#e9e3d4` · warm gold `#d4a24c`
+  · crimson `#c44536` · sage `#6e8b5a`
+- **Atmosfer** — grain texture overlay (SVG noise), vignette radial,
+  asymmetric editorial grid
 
-## 🚀 Demo Langsung
+---
 
-**[🌐 Kunjungi Aplikasi](https://erzambayu.me/age-calculator/)**
+## Fitur
 
-## 🛠️ Teknologi
+### 7 Tab Navigation
 
-### Frontend Stack
-- **HTML5** - Semantic markup & structure
-- **TailwindCSS** - Utility-first CSS framework
-- **JavaScript ES6+** - Modern JS features
-- **Chart.js** - Data visualization
-- **GSAP** - Professional animations
-- **Particles.js** - Interactive background effects
+| № | Tab | Isi |
+|---|---|---|
+| 01 | **Chronograph** | Live ticking age + 11 cards (battery, zodiac, countdown, odometer, biorhythm, year progress, milestones, dll) |
+| 02 | **Reverse Date** | Hitung tanggal lahir dari umur Y/M/D |
+| 03 | **Timeline** | 14 milestone hidup (lahir → 80 tahun) dengan status passed/now/future |
+| 04 | **Cosmos** | Perbandingan kosmik: tidur, makanan, sunrise, Apollo 11, World Wide Web, Einstein, Mozart |
+| 05 | **Life in Weeks** | Grid 90×52 dots (4,680 minggu hidup), gold = lewat, crimson = minggu ini |
+| 06 | **Compare** | Bandingkan 2 subjek: siapa lebih dulu, selisih ke detik, generasi, zodiac match |
+| 07 | **Archive** | localStorage subjects yang pernah disusun, open / delete |
 
-### Libraries & APIs
-- **Font Awesome** - Icon system
-- **Lottie** - Micro-animations
-- **HTML2Canvas** - Screenshot capture
-- **jsPDF** - PDF generation
-- **LocalStorage API** - Data persistence
+### Hero Result
 
-## 📋 Panduan Penggunaan
+Live ticker tahun · bulan · hari · jam · menit · detik dengan animasi
+count-up tween di first paint (cubic ease-out, 1.1s).
 
-### 1. **Kalkulator Usia**
+### Cards Highlight
+
+- **Life Battery** — 80 cells (configurable 50-120 via settings),
+  filled gold = sudah hidup, current = pulse crimson, sisa = abu
+- **Cosmic Odometer** — live ticking heartbeat, breath, blink, earth
+  orbit, lunar cycle, earth spin (update tiap detik)
+- **Biorhythm** — 3 sine waves (physical 23d, emotional 28d, intellectual
+  33d) ±15 hari around today, nilai % hari ini di legend
+- **Year Progress** — 3 progress bar: personal year (sejak ulang tahun
+  terakhir), calendar year, today (live %)
+- **Milestone Moments** — countdown ke 8 angka bulat (10k hari, 100k jam,
+  1B detik, dst), reached ditandai ✓ + tanggal
+- **Zodiac (expanded)** — Western (12 sign + element) + Chinese (12 hewan
+  + 5 element) + Numerology Life Path (1-9, 11/22/33 master)
+- **Day-of-week Trivia** — Monday's Child poem
+- **Daily Horoscope** — rotasi puitis per zodiac
+
+### Settings Drawer (slide dari kanan, `⚙`)
+
+- **Life Expectancy** slider 50–120 tahun → re-render battery + weeks grid
+- **Working Hours** pills 6/8/10/12 → re-render alloc chart
+- **Motion** Full / Reduced / Off → CSS-level animation control
+- **Reset Everything** → clear semua localStorage
+
+### Keyboard Shortcuts (`?` untuk overlay)
+
 ```
-📅 Input tanggal lahir → ✨ Klik "Hitung Umur" → 📊 Lihat hasil lengkap
+/        Fokus tanggal lahir
+Enter    Hitung almanak
+1-7      Pindah tab
+T        Toggle tema
+L        Toggle bahasa
+S        Simpan ke arsip
+?        Tampilkan shortcuts
+Esc      Tutup overlay
 ```
 
-### 2. **Pencari Tanggal Lahir**
-```
-📝 Input usia (tahun/bulan/hari) → 🔍 Klik "Cari Tanggal Lahir"
-```
+### Sharing & Export
 
-### 3. **Timeline Kehidupan**
-```
-📈 Jelajahi milestone hidup → 🏆 Lihat pencapaian yang sudah dicapai
-```
+- **PDF Certificate** — sertifikat A4 elegant via jsPDF (border ganda,
+  garis pemisah, nomor edisi)
+- **Image Export** — PNG hi-res via html2canvas
+- **Twitter / WhatsApp** — share text dengan stats
+- **Copy Link** — URL dengan `?dob=&name=` (auto-hydrate saat dibuka)
 
-### 4. **Perbandingan Usia**
-```
-👥 Bandingkan dengan selebriti → 📊 Lihat posisi usia Anda
-```
+### i18n
 
-### 5. **Statistik Personal**
-```
-📊 Analisis mendalam → 💓 Statistik detak jantung, napas, dll.
-```
+Indonesia (default) + English. Toggle real-time tanpa reload, semua
+string termasuk milestone deskripsi & cosmos comparisons.
 
-## ⚙️ Instalasi & Setup
+---
 
-### Quick Start
+## Stack
+
+| Layer | Tools |
+|---|---|
+| Markup | HTML5 semantic |
+| Style | Custom CSS (no framework), CSS Variables, Container Queries |
+| Logic | Vanilla JavaScript ES6+ (IIFE module) |
+| Charts | Chart.js 4 (doughnut + line) |
+| PDF | jsPDF 2.5 |
+| Image | html2canvas 1.4 |
+| Persistence | LocalStorage |
+| Fonts | Google Fonts (Fraunces variable, JetBrains Mono, Inter) |
+
+Tidak ada bundler, tidak ada build step. Drop dan jalan.
+
+---
+
+## Install & Jalankan
+
 ```bash
-# Clone repository
 git clone https://github.com/Erzambayu/age-calculator.git
-
-# Masuk ke folder
 cd age-calculator
 
-# Buka di browser
-open index.html
-```
-
-### Development Server
-```bash
-# Python HTTP Server
+# salah satu:
 python -m http.server 8000
-
-# Node.js Live Server
 npx live-server
-
-# PHP Built-in Server  
 php -S localhost:8000
+
+# atau buka langsung
+start index.html        # Windows
+open index.html          # macOS
+xdg-open index.html      # Linux
 ```
 
-## 🎯 Fitur Terbaru
+Browser support: Chrome 90+, Firefox 88+, Safari 14+, Edge 90+.
 
-### ✅ **Baru Ditambahkan**
-- 🎨 **Enhanced UI/UX**: Redesign komprehensif dengan modern design
-- 📊 **Data Visualization**: Chart interaktif untuk progress hidup
-- 🎭 **Theme System**: 6 tema warna dengan switching dinamis
-- 🌓 **Improved Dark Mode**: Visibilitas text yang lebih baik
-- 🎉 **Birthday Animations**: Celebrasi otomatis dengan confetti
-- 📱 **Mobile Optimization**: Responsive design yang sempurna
-- 🔧 **Bug Fixes**: Perbaikan JavaScript errors dan compatibility
+---
 
-### 🛠️ **Technical Improvements**
-- Modern ES6+ JavaScript architecture
-- GSAP integration untuk animasi professional
-- Chart.js untuk visualisasi data
-- Particles.js untuk efek background
-- Enhanced localStorage management
-- Improved error handling
-
-## 🌐 Browser Support
-
-| Browser | Version |
-|---------|---------|
-| Chrome  | ✅ 90+  |
-| Firefox | ✅ 88+  |
-| Safari  | ✅ 14+  |
-| Edge    | ✅ 90+  |
-| Opera   | ✅ 76+  |
-
-## 🤝 Contributing
-
-Kontribusi sangat diterima! Silakan:
-
-1. **Fork** repository ini
-2. **Create** branch fitur baru (`git checkout -b feature/AmazingFeature`)
-3. **Commit** perubahan (`git commit -m 'Add AmazingFeature'`)
-4. **Push** ke branch (`git push origin feature/AmazingFeature`)
-5. **Open** Pull Request
-
-## 📄 License
-
-Distributed under the MIT License. See `LICENSE` for more information.
-
-## 👨‍💻 Developer
-
-**Erzam Bayu**
-- 🌐 Website: [erzambayu.me](https://erzambayu.me)
-- 📧 Email: erzambayu@gmail.com
-- 💼 LinkedIn: [Erzam Bayu](https://linkedin.com/in/erzambayu)
-- 🐙 GitHub: [@Erzambayu](https://github.com/Erzambayu)
-
-## 🙏 Credits
-
-- **Original Concept**: Zainalabrori
-- **Enhanced by**: Erzambayu  
-- **Design Inspiration**: Modern web trends
-- **Icons**: Font Awesome
-- **Animations**: GSAP & Lottie
-
-## 📊 Project Stats
+## Struktur File
 
 ```
-📁 Total Files: 6
-💻 Lines of Code: 2000+
-🎨 Themes: 6
-🌍 Languages: 2
-📱 Responsive: ✅
-♿ Accessible: ✅
-⚡ Performance: A+
+age-calculator/
+├── index.html         # markup + CDN scripts
+├── styles.css         # full custom stylesheet (~1300 lines)
+├── script.js          # main engine (IIFE)
+├── localization.js    # i18n dictionary + horoscope pool
+├── README.md
+└── Screenshot ...png
 ```
+
+---
+
+## URL Parameters
+
+Auto-hydrate saat dibuka:
+
+```
+index.html?dob=1999-08-17&name=Erzam
+```
+
+---
+
+## Roadmap
+
+- [ ] Multi-language: ja / es / fr
+- [ ] Service Worker untuk offline mode
+- [ ] Custom zodiac systems (Mayan, Celtic Tree)
+- [ ] Lunar phase saat lahir
+- [ ] Progressive Web App manifest
+- [ ] Dark mode auto-detect dari sistem
+
+---
+
+## Credits
+
+- **Design & Code** — [Erzam Bayu](https://github.com/Erzambayu)
+- **Original Concept** — [Zainalabrori](https://github.com/Zainalabrori)
+- **Type** — Fraunces (Undercase Type), JetBrains Mono (JetBrains)
+
+---
+
+## License
+
+MIT — pakai, fork, modif. Silakan rebuild jadi punyamu sendiri.
 
 ---
 
 <div align="center">
 
-**[🚀 Live Demo](https://erzambayu.me/age-calculator/) | [📖 Documentation](https://github.com/Erzambayu/age-calculator) | [🐛 Report Bug](https://github.com/Erzambayu/age-calculator/issues)**
+**[Live Demo](https://erzambayu.me/age-calculator/)** ·
+**[Issues](https://github.com/Erzambayu/age-calculator/issues)** ·
+**[Pull Requests](https://github.com/Erzambayu/age-calculator/pulls)**
 
-Made with ❤️ by [Erzam Bayu](https://github.com/Erzambayu)
-
-⭐ **Jika project ini membantu, jangan lupa kasih star!** ⭐
+<sub>Set in Fraunces &amp; JetBrains Mono · Published MMXXVI</sub>
 
 </div>
