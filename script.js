@@ -1,1220 +1,1248 @@
-// Enhanced Interactive Age Calculator with Modern Features
-// Dark Mode Toggle with Animation and Local Storage
-document.addEventListener('DOMContentLoaded', () => {
-  // Initialize all features
-  initializeDarkMode();
-  initializeTabSystem();
-  initializeQuickDatePresets();
-  initializeBirthdayAnimations();
-  initializeFunFacts();
-  
-  // Set initial dark mode based on localStorage or system preference
-  const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  const storedDarkMode = localStorage.getItem('darkMode');
-  
-  if (storedDarkMode === 'true' || (storedDarkMode === null && prefersDarkMode)) {
-    document.documentElement.classList.add('dark');
-  }
+// ============================================================
+// THE AGE ALMANAC · script
+// chronograph editorial · live chronometry engine
+// ============================================================
 
-  // Event Listeners untuk form
-  const calculateBtn = document.getElementById('calculateBtn');
-  const dobInput = document.getElementById('dob');
-  
-  if (calculateBtn && dobInput) {
-    calculateBtn.addEventListener('click', () => {
-      const dobValue = dobInput.value;
-      if (dobValue) {
-        calculateAge(dobValue);
-      } else {
-        alert('Silakan masukkan tanggal lahir terlebih dahulu!');
-      }
-    });
-    
-    // Auto calculate when date changes
-    dobInput.addEventListener('change', () => {
-      if (dobInput.value) {
-        calculateAge(dobInput.value);
-      }
-    });
-  }
-  
-  // Birth calculator
-  const findBirthBtn = document.getElementById('findBirthBtn');
-  if (findBirthBtn) {
-    findBirthBtn.addEventListener('click', () => {
-      const years = parseInt(document.getElementById('years').value) || 0;
-      const months = parseInt(document.getElementById('months').value) || 0;
-      const days = parseInt(document.getElementById('days').value) || 0;
-      const ageInput = document.getElementById('ageInput').value;
-      
-      findBirthDate(years, months, days, ageInput);
-    });
-  }
-  
-  // Theme selector
-  const themeSelector = document.getElementById('themeSelector');
-  if (themeSelector) {
-    themeSelector.addEventListener('change', (e) => {
-      applyTheme(e.target.value);
-    });
-  }
-  
-  // Language selector
-  const languageSelector = document.getElementById('languageSelector');
-  if (languageSelector) {
-    languageSelector.addEventListener('change', (e) => {
-      changeLanguage(e.target.value);
-    });
-  }
+(() => {
+  'use strict';
 
-  // Load saved theme
-  const savedTheme = localStorage.getItem('selectedTheme') || 'default';
-  if (savedTheme !== 'default' && themeSelector) {
-    themeSelector.value = savedTheme;
-    applyTheme(savedTheme);
-  }
-  
-  // Load saved language
-  const savedLang = localStorage.getItem('preferredLanguage') || 'id';
-  if (languageSelector) {
-    languageSelector.value = savedLang;
-  }
-  
-  // Update history display
-  updateHistoryDisplay();
-  
-  // Initialize GSAP animations if available
-  if (typeof gsap !== 'undefined') {
-    // Animate page load
-    gsap.fromTo('header', 
-      { opacity: 0, y: -50 },
-      { opacity: 1, y: 0, duration: 1, ease: "power2.out" }
-    );
-    
-    gsap.fromTo('nav', 
-      { opacity: 0, scale: 0.9 },
-      { opacity: 1, scale: 1, duration: 0.8, delay: 0.3, ease: "power2.out" }
-    );
-  }
-});
-
-// Variables for intervals
-let countdownInterval;
-
-// Missing functions needed by localization.js
-window.recalculateAge = function() {
-  const dobInput = document.getElementById('dob');
-  if (dobInput && dobInput.value) {
-    calculateAge(dobInput.value);
-  }
-};
-
-window.recalculateBirthDate = function() {
-  const years = parseInt(document.getElementById('years').value) || 0;
-  const months = parseInt(document.getElementById('months').value) || 0;
-  const days = parseInt(document.getElementById('days').value) || 0;
-  const ageInput = document.getElementById('ageInput').value;
-  
-  findBirthDate(years, months, days, ageInput);
-};
-
-// Initialize Dark Mode functionality
-function initializeDarkMode() {
-  const darkModeToggle = document.getElementById('darkModeToggle');
-  if (!darkModeToggle) return;
-  
-  darkModeToggle.addEventListener('click', () => {
-    // Add transition effect
-    document.documentElement.style.transition = 'background-color 0.3s ease, color 0.3s ease';
-    document.documentElement.classList.toggle('dark');
-    
-    // Store preference
-    localStorage.setItem('darkMode', document.documentElement.classList.contains('dark'));
-    
-    // Remove transition style after animation completes
-    setTimeout(() => {
-      document.documentElement.style.transition = '';
-    }, 300);
-    
-    // Update particle colors for dark mode
-    updateParticleColors();
-  });
-}
-
-// Enhanced Tab System
-function initializeTabSystem() {
-  const tabs = {
-    age: { button: document.getElementById('tabAge'), panel: document.getElementById('ageCalculator') },
-    birth: { button: document.getElementById('tabBirth'), panel: document.getElementById('birthCalculator') },
-    timeline: { button: document.getElementById('tabTimeline'), panel: document.getElementById('timelineCalculator') },
-    comparison: { button: document.getElementById('tabComparison'), panel: document.getElementById('comparisonCalculator') },
-    stats: { button: document.getElementById('tabStats'), panel: document.getElementById('statsCalculator') }
+  // ---------- STATE ----------
+  const state = {
+    dob: null,        // Date object
+    name: '',         // subject name
+    tickerId: null,
+    cdId: null,
+    odoId: null,
   };
 
-  // Add click listeners to all tabs
-  Object.keys(tabs).forEach(tabKey => {
-    tabs[tabKey].button.addEventListener('click', () => switchToTab(tabKey, tabs));
-  });
+  // ---------- DOM ----------
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 
-  // Set active tab from localStorage on page load
-  const activeTab = localStorage.getItem('activeTab') || 'age';
-  switchToTab(activeTab, tabs);
-}
+  // ---------- UTIL ----------
+  const fmt = n => Math.floor(n).toLocaleString('en-US');
+  const pad = (n, w = 2) => String(n).padStart(w, '0');
 
-// Switch tabs with smooth animation
-function switchToTab(activeTabKey, tabs) {
-  Object.keys(tabs).forEach(tabKey => {
-    const { button, panel } = tabs[tabKey];
-    
-    if (tabKey === activeTabKey) {
-      // Activate tab
-      button.classList.add('text-purple-600', 'dark:text-purple-400', 'bg-gradient-to-r', 'from-purple-50', 'to-pink-50', 'dark:from-purple-900/50', 'dark:to-pink-900/50', 'border-b-4', 'border-purple-500', 'tab-active');
-      button.classList.remove('text-gray-600', 'dark:text-gray-400');
-      
-      // Show panel with animation
-      panel.classList.remove('hidden');
-      panel.classList.add('active');
-      
-      // Trigger animations for the active panel
-      gsap.fromTo(panel, 
-        { opacity: 0, y: 30, scale: 0.95 },
-        { opacity: 1, y: 0, scale: 1, duration: 0.6, ease: "power2.out" }
-      );
-    } else {
-      // Deactivate tab
-      button.classList.remove('text-purple-600', 'dark:text-purple-400', 'bg-gradient-to-r', 'from-purple-50', 'to-pink-50', 'dark:from-purple-900/50', 'dark:to-pink-900/50', 'border-b-4', 'border-purple-500', 'tab-active');
-      button.classList.add('text-gray-600', 'dark:text-gray-400');
-      
-      // Hide panel
-      panel.classList.add('hidden');
-      panel.classList.remove('active');
+  function toast(msg) {
+    const el = $('#toast');
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(toast._t);
+    toast._t = setTimeout(() => el.classList.remove('show'), 2200);
+  }
+
+  // ---------- AGE MATH ----------
+  function ageDetails(dob, now = new Date()) {
+    let y = now.getFullYear() - dob.getFullYear();
+    let m = now.getMonth() - dob.getMonth();
+    let d = now.getDate() - dob.getDate();
+    if (d < 0) {
+      m--;
+      const prev = new Date(now.getFullYear(), now.getMonth(), 0);
+      d += prev.getDate();
     }
-  });
-  
-  // Store active tab
-  localStorage.setItem('activeTab', activeTabKey);
-  
-  // Load content for specific tabs
-  if (activeTabKey === 'timeline') loadTimelineContent();
-  if (activeTabKey === 'comparison') loadComparisonContent();
-  if (activeTabKey === 'stats') loadStatsContent();
-}
+    if (m < 0) { y--; m += 12; }
+    const ms = now - dob;
+    const totalDays = ms / 86400000;
+    const totalHours = ms / 3600000;
+    const totalMins = ms / 60000;
+    const totalSecs = ms / 1000;
+    const totalWeeks = totalDays / 7;
+    return { y, m, d, totalDays, totalHours, totalMins, totalSecs, totalWeeks, ms };
+  }
 
-// Quick date presets
-function initializeQuickDatePresets() {
-  window.setQuickDate = function(type) {
-    const dobInput = document.getElementById('dob');
-    const today = new Date();
-    
-    if (type === 'today') {
-      dobInput.value = today.toISOString().split('T')[0];
-    } else if (type === 'yesterday') {
-      const yesterday = new Date(today);
-      yesterday.setDate(today.getDate() - 1);
-      dobInput.value = yesterday.toISOString().split('T')[0];
+  function nextBirthday(dob, now = new Date()) {
+    const month = dob.getMonth();
+    const day = dob.getDate();
+    let next = new Date(now.getFullYear(), month, day);
+    // handle Feb 29 → Feb 28 fallback
+    if (next.getMonth() !== month) next = new Date(now.getFullYear(), month, 28);
+    if (next < now) {
+      next = new Date(now.getFullYear() + 1, month, day);
+      if (next.getMonth() !== month) next = new Date(now.getFullYear() + 1, month, 28);
     }
-    
-    // Trigger calculation
-    calculateAge(dobInput.value);
-  };
-}
+    return next;
+  }
 
-// Fun Facts rotation
-function initializeFunFacts() {
-  const funFacts = [
-    "💫 Jantung manusia berdetak sekitar 2.5 miliar kali dalam hidupnya!",
-    "🌍 Bumi mengelilingi matahari dengan kecepatan 107,000 km/jam!",
-    "🧠 Otak manusia memiliki sekitar 86 miliar neuron!",
-    "⚡ Tubuh manusia menghasilkan listrik sekitar 100 watt!",
-    "🌟 Anda terbuat dari elemen yang berasal dari bintang!",
-    "🔬 DNA Anda 99.9% sama dengan semua manusia lainnya!",
-    "🌙 Anda bergerak melalui ruang angkasa dengan kecepatan 220 km/detik!",
-    "💧 Tubuh manusia dewasa terdiri dari 60% air!",
-    "🦴 Anda lahir dengan 270 tulang, tapi dewasa hanya memiliki 206!",
-    "👁️ Mata manusia dapat membedakan 10 juta warna berbeda!"
+  function isBirthdayToday(dob, now = new Date()) {
+    return dob.getDate() === now.getDate() && dob.getMonth() === now.getMonth();
+  }
+
+  // ---------- ZODIAC ----------
+  const ZODIAC = [
+    { name: 'Capricorn', sigil: '♑', element: 'Earth', start: [12, 22], end: [1, 19] },
+    { name: 'Aquarius',  sigil: '♒', element: 'Air',   start: [1, 20],  end: [2, 18] },
+    { name: 'Pisces',    sigil: '♓', element: 'Water', start: [2, 19],  end: [3, 20] },
+    { name: 'Aries',     sigil: '♈', element: 'Fire',  start: [3, 21],  end: [4, 19] },
+    { name: 'Taurus',    sigil: '♉', element: 'Earth', start: [4, 20],  end: [5, 20] },
+    { name: 'Gemini',    sigil: '♊', element: 'Air',   start: [5, 21],  end: [6, 20] },
+    { name: 'Cancer',    sigil: '♋', element: 'Water', start: [6, 21],  end: [7, 22] },
+    { name: 'Leo',       sigil: '♌', element: 'Fire',  start: [7, 23],  end: [8, 22] },
+    { name: 'Virgo',     sigil: '♍', element: 'Earth', start: [8, 23],  end: [9, 22] },
+    { name: 'Libra',     sigil: '♎', element: 'Air',   start: [9, 23],  end: [10, 22] },
+    { name: 'Scorpio',   sigil: '♏', element: 'Water', start: [10, 23], end: [11, 21] },
+    { name: 'Sagittarius', sigil: '♐', element: 'Fire', start: [11, 22], end: [12, 21] }
   ];
-  
-  let factIndex = 0;
-  const factContainer = document.getElementById('funFacts');
-  
-  function rotateFacts() {
-    const facts = factContainer.children;
-    if (facts.length > 0) {
-      // Update facts with animation
-      gsap.to(facts, {
-        opacity: 0,
-        y: -20,
-        duration: 0.3,
-        stagger: 0.1,
-        onComplete: () => {
-          for (let i = 0; i < facts.length; i++) {
-            facts[i].innerHTML = `<p class="text-gray-700 dark:text-gray-200">${funFacts[(factIndex + i) % funFacts.length]}</p>`;
-          }
-          gsap.to(facts, {
-            opacity: 1,
-            y: 0,
-            duration: 0.3,
-            stagger: 0.1
-          });
-        }
-      });
-      
-      factIndex = (factIndex + 3) % funFacts.length;
+  function getZodiac(month, day) {
+    for (const z of ZODIAC) {
+      if (z.name === 'Capricorn') {
+        if ((month === 12 && day >= 22) || (month === 1 && day <= 19)) return z;
+      } else if (month === z.start[0] && day >= z.start[1]) return z;
+      else if (month === z.end[0] && day <= z.end[1]) return z;
     }
+    return ZODIAC[0];
   }
-  
-  // Rotate facts every 10 seconds
-  setInterval(rotateFacts, 10000);
-}
 
-// Birthday animations
-function initializeBirthdayAnimations() {
-  window.triggerBirthdayAnimation = function() {
-    const overlay = document.getElementById('birthdayOverlay');
-    overlay.classList.remove('hidden');
-    overlay.classList.add('flex');
-    
-    // Add confetti effect
-    createConfetti();
-    
-    // Play celebration sound (if available)
-    playSound('celebration');
+  // ---------- CHINESE ZODIAC ----------
+  // anchor: 1900 = Rat, then cycles 12. element cycle 5 across 10-year pairs.
+  const CHINESE = [
+    { name: 'Rat',     glyph: '🐀' },
+    { name: 'Ox',      glyph: '🐂' },
+    { name: 'Tiger',   glyph: '🐅' },
+    { name: 'Rabbit',  glyph: '🐇' },
+    { name: 'Dragon',  glyph: '🐉' },
+    { name: 'Snake',   glyph: '🐍' },
+    { name: 'Horse',   glyph: '🐎' },
+    { name: 'Goat',    glyph: '🐐' },
+    { name: 'Monkey',  glyph: '🐒' },
+    { name: 'Rooster', glyph: '🐓' },
+    { name: 'Dog',     glyph: '🐕' },
+    { name: 'Pig',     glyph: '🐖' }
+  ];
+  const ELEMENTS = ['Wood', 'Fire', 'Earth', 'Metal', 'Water'];
+  function getChinese(year) {
+    // Approximate: chinese new year roughly late Jan/early Feb. We use the
+    // year directly (good enough for a poetic almanac, not divination).
+    const idx = ((year - 1900) % 12 + 12) % 12;
+    const elIdx = Math.floor(((year - 1900) % 10) / 2);
+    return { ...CHINESE[idx], element: ELEMENTS[elIdx] };
+  }
+
+  // ---------- NUMEROLOGY · LIFE PATH ----------
+  function digitSum(n) {
+    let s = 0;
+    while (n > 0) { s += n % 10; n = Math.floor(n / 10); }
+    return s;
+  }
+  function reduceNumber(n) {
+    while (n > 9 && n !== 11 && n !== 22 && n !== 33) n = digitSum(n);
+    return n;
+  }
+  function getLifePath(dob) {
+    const y = reduceNumber(digitSum(dob.getFullYear()));
+    const m = reduceNumber(dob.getMonth() + 1);
+    const d = reduceNumber(dob.getDate());
+    return reduceNumber(y + m + d);
+  }
+  const LIFE_PATH_TRAITS = {
+    1: 'Pelopor · Mandiri',  2: 'Diplomat · Peka',
+    3: 'Kreator · Ekspresif', 4: 'Pembangun · Stabil',
+    5: 'Petualang · Bebas',   6: 'Pengasuh · Harmonis',
+    7: 'Pencari · Reflektif', 8: 'Eksekutor · Ambisius',
+    9: 'Humanis · Welas',     11: 'Visioner · Intuitif',
+    22: 'Master Builder',     33: 'Master Teacher'
   };
-  
-  window.closeBirthdayAnimation = function() {
-    const overlay = document.getElementById('birthdayOverlay');
-    overlay.classList.add('hidden');
-    overlay.classList.remove('flex');
-  };
-}
 
-// Create confetti effect
-function createConfetti() {
-  const colors = ['#ff6b6b', '#ffa726', '#ffeb3b', '#66bb6a', '#42a5f5', '#5c6bc0', '#ab47bc'];
-  const confettiCount = 100;
-  
-  for (let i = 0; i < confettiCount; i++) {
-    const confetti = document.createElement('div');
-    confetti.style.position = 'fixed';
-    confetti.style.width = '10px';
-    confetti.style.height = '10px';
-    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-    confetti.style.left = Math.random() * 100 + 'vw';
-    confetti.style.top = '-10px';
-    confetti.style.zIndex = '1000';
-    confetti.style.borderRadius = '50%';
-    document.body.appendChild(confetti);
-    
-    // Animate confetti falling
-    gsap.to(confetti, {
-      y: window.innerHeight + 100,
-      rotation: 360 * 3,
-      duration: Math.random() * 3 + 2,
-      ease: "power2.in",
-      onComplete: () => {
-        confetti.remove();
-      }
-    });
-  }
-}
-
-// Update particle colors for theme changes
-function updateParticleColors() {
-  if (window.pJSDom && window.pJSDom[0]) {
-    const isDark = document.documentElement.classList.contains('dark');
-    const colors = isDark 
-      ? ['#8b5cf6', '#ec4899', '#06b6d4', '#10b981']
-      : ['#3b82f6', '#8b5cf6', '#ec4899', '#10b981'];
-    
-    window.pJSDom[0].pJS.particles.color.value = colors;
-    window.pJSDom[0].pJS.fn.particlesRefresh();
-  }
-}
-
-// Enhanced calculate age function with new visualizations
-// ... existing code ...
-
-async function calculateAge(dobInput) {
-  // Clear previous countdown interval if exists
-  if (countdownInterval) {
-    clearInterval(countdownInterval);
-  }
-
-  const resultEl = document.getElementById('result');
-  
-  if (!dobInput) {
-    resultEl.classList.add('hidden');
-    return;
-  }
-
-  const birthDate = new Date(dobInput);
-  const now = new Date();
-
-  if (birthDate > now) {
-    alert('Tanggal lahir tidak boleh di masa depan!');
-    return;
-  }
-
-  // Calculate age details
-  const ageDetails = calculateAgeDetails(birthDate);
-  const zodiacSign = getZodiac(birthDate.getMonth() + 1, birthDate.getDate());
-  
-  // Show results with animation
-  resultEl.classList.remove('hidden');
-  
-  // Update main age display
-  updateMainAgeDisplay(ageDetails);
-  
-  // Update detail cards
-  updateAgeDetailsCard(ageDetails);
-  updateZodiacCard(zodiacSign, birthDate);
-  updateCountdownCard(birthDate);
-  
-  // Update personal statistics
-  updatePersonalStats(ageDetails);
-  
-  // Create visualizations
-  createLifeChart(ageDetails);
-  createAgeBreakdownChart(ageDetails);
-  
-  // Generate achievements timeline
-  generateAchievementsTimeline(ageDetails);
-  
-  // Show floating cake if it's birthday
-  checkBirthdayAndShowCake(birthDate);
-  
-  // Get daily horoscope
-  const horoscopeData = await getDailyHoroscope();
-  if (horoscopeData) {
-    displayDailyHoroscope(zodiacSign, horoscopeData);
-  }
-  
-  // Save to history
-  saveToHistory(birthDate, ageDetails);
-  
-  // Animate result appearance
-  gsap.fromTo(resultEl.children, 
-    { opacity: 0, y: 50, scale: 0.9 },
-    { opacity: 1, y: 0, scale: 1, duration: 0.6, stagger: 0.1, ease: "power2.out" }
-  );
-}
-
-// Update main age display
-function updateMainAgeDisplay(ageDetails) {
-  document.getElementById('mainAge').textContent = ageDetails.years;
-  document.getElementById('ageText').textContent = `Tahun Penuh Pengalaman`;
-  document.getElementById('detailedAge').textContent = 
-    `${ageDetails.totalDays.toLocaleString()} hari | ${ageDetails.totalHours.toLocaleString()} jam | ${ageDetails.totalMinutes.toLocaleString()} menit`;
-}
-
-// Update age details card
-function updateAgeDetailsCard(ageDetails) {
-  const container = document.getElementById('ageDetails');
-  container.innerHTML = `
-    <div class="flex items-center justify-between">
-      <span>📅 Tahun</span>
-      <span class="font-bold">${ageDetails.years}</span>
-    </div>
-    <div class="flex items-center justify-between">
-      <span>🗓️ Bulan</span>
-      <span class="font-bold">${ageDetails.months}</span>
-    </div>
-    <div class="flex items-center justify-between">
-      <span>📆 Hari</span>
-      <span class="font-bold">${ageDetails.days}</span>
-    </div>
-    <div class="flex items-center justify-between">
-      <span>🕐 Total Hari</span>
-      <span class="font-bold">${ageDetails.totalDays.toLocaleString()}</span>
-    </div>
-    <div class="flex items-center justify-between">
-      <span>⏰ Total Jam</span>
-      <span class="font-bold">${ageDetails.totalHours.toLocaleString()}</span>
-    </div>
-    <div class="flex items-center justify-between">
-      <span>⏱️ Total Menit</span>
-      <span class="font-bold">${ageDetails.totalMinutes.toLocaleString()}</span>
-    </div>
-  `;
-}
-
-// Update zodiac card
-function updateZodiacCard(zodiacSign, birthDate) {
-  const container = document.getElementById('zodiacInfo');
-  const zodiacInfo = getZodiacInfo(zodiacSign);
-  
-  container.innerHTML = `
-    <div class="text-4xl mb-3">${zodiacInfo.symbol}</div>
-    <h4 class="text-xl font-bold text-gray-800 dark:text-white mb-2">${zodiacSign}</h4>
-    <p class="text-sm text-gray-600 dark:text-gray-300 mb-3">${zodiacInfo.dates}</p>
-    <div class="space-y-2">
-      <div class="text-sm"><strong>Element:</strong> ${zodiacInfo.element}</div>
-      <div class="text-sm"><strong>Planet:</strong> ${zodiacInfo.planet}</div>
-      <div class="text-sm"><strong>Sifat:</strong> ${zodiacInfo.traits}</div>
-    </div>
-  `;
-}
-
-// Update countdown card
-function updateCountdownCard(birthDate) {
-  const container = document.getElementById('countdown');
-  
-  function updateCountdown() {
+  // ---------- TOPBAR DATE ----------
+  function updateTopbarDate() {
     const now = new Date();
-    const thisYear = now.getFullYear();
-    let nextBirthday = new Date(thisYear, birthDate.getMonth(), birthDate.getDate());
-    
-    // If birthday has passed this year, set to next year
-    if (nextBirthday < now) {
-      nextBirthday.setFullYear(thisYear + 1);
-    }
-    
-    const diff = nextBirthday - now;
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-    
-    if (days === 0 && hours === 0 && minutes === 0 && seconds === 0) {
-      container.innerHTML = `
-        <div class="text-2xl font-bold text-pink-500 animate-bounce">
-          🎉 Selamat Ulang Tahun! 🎉
-        </div>
-      `;
-      triggerBirthdayAnimation();
-    } else {
-      container.innerHTML = `
-        <div class="text-lg font-bold mb-2">Ulang Tahun Berikutnya</div>
-        <div class="grid grid-cols-2 gap-2 text-sm">
-          <div class="bg-pink-100 dark:bg-pink-900/30 p-2 rounded">
-            <div class="text-2xl font-bold">${days}</div>
-            <div>Hari</div>
-          </div>
-          <div class="bg-purple-100 dark:bg-purple-900/30 p-2 rounded">
-            <div class="text-2xl font-bold">${hours}</div>
-            <div>Jam</div>
-          </div>
-        </div>
-      `;
-    }
+    const dict = I18N[CURRENT_LANG] || I18N.id;
+    const months = dict.months_full;
+    const dows = dict.dow;
+    $('#todayLong').textContent = `${dows[now.getDay()].toUpperCase()} · ${pad(now.getDate())} ${months[now.getMonth()].toUpperCase()} ${now.getFullYear()}`;
   }
-  
-  updateCountdown();
-  countdownInterval = setInterval(updateCountdown, 1000);
-}
+  window.updateTopbarDate = updateTopbarDate;
 
-// Update personal statistics
-function updatePersonalStats(ageDetails) {
-  // Calculate estimates
-  const heartbeats = Math.floor(ageDetails.totalMinutes * 70); // ~70 bpm average
-  const breaths = Math.floor(ageDetails.totalMinutes * 16); // ~16 breaths per minute
-  const sleepHours = Math.floor(ageDetails.totalHours * 0.33); // ~8 hours sleep per day
-  const meals = Math.floor(ageDetails.totalDays * 3); // 3 meals per day
-  
-  document.getElementById('heartbeats').textContent = heartbeats.toLocaleString();
-  document.getElementById('breaths').textContent = breaths.toLocaleString();
-  document.getElementById('sleepHours').textContent = sleepHours.toLocaleString();
-  document.getElementById('meals').textContent = meals.toLocaleString();
-}
-
-// Create life progress chart
-function createLifeChart(ageDetails) {
-  const ctx = document.getElementById('lifeChart');
-  if (!ctx) return;
-  
-  // Destroy existing chart if it exists
-  if (window.lifeChartInstance) {
-    window.lifeChartInstance.destroy();
+  // ---------- SETTINGS ----------
+  const SETTINGS = {
+    lifeExpectancy: parseInt(localStorage.getItem('almanac.life')) || 80,
+    workHours: parseInt(localStorage.getItem('almanac.work')) || 8,
+    motion: localStorage.getItem('almanac.motion') || 'full'
+  };
+  function saveSettings() {
+    localStorage.setItem('almanac.life', SETTINGS.lifeExpectancy);
+    localStorage.setItem('almanac.work', SETTINGS.workHours);
+    localStorage.setItem('almanac.motion', SETTINGS.motion);
   }
-  
-  const years = ageDetails.years;
-  const expectedLifespan = 75; // Average lifespan
-  const livedPercent = (years / expectedLifespan) * 100;
-  
-  window.lifeChartInstance = new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-      labels: ['Telah Hidup', 'Masa Depan'],
-      datasets: [{
-        data: [livedPercent, 100 - livedPercent],
-        backgroundColor: [
-          'linear-gradient(135deg, #8b5cf6, #ec4899)',
-          'rgba(156, 163, 175, 0.3)'
-        ],
-        borderWidth: 0
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: {
-          position: 'bottom'
-        },
-        title: {
-          display: true,
-          text: 'Perjalanan Hidup'
-        }
-      }
+
+  // ---------- COUNT-UP TWEEN ----------
+  function countUp(el, target, duration = 1100) {
+    if (!el) return;
+    if (SETTINGS.motion === 'off') { el.textContent = target; return; }
+    const start = performance.now();
+    const from = 0;
+    const ease = t => 1 - Math.pow(1 - t, 3);
+    function step(now) {
+      const p = Math.min(1, (now - start) / duration);
+      const v = Math.floor(from + (target - from) * ease(p));
+      el.textContent = v;
+      if (p < 1) requestAnimationFrame(step);
+      else el.textContent = target;
     }
-  });
-}
-
-// Create age breakdown chart
-function createAgeBreakdownChart(ageDetails) {
-  const ctx = document.getElementById('ageBreakdownChart');
-  if (!ctx) return;
-  
-  if (window.ageBreakdownChartInstance) {
-    window.ageBreakdownChartInstance.destroy();
+    requestAnimationFrame(step);
   }
-  
-  window.ageBreakdownChartInstance = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: ['Tahun', 'Bulan', 'Hari'],
-      datasets: [{
-        label: 'Umur Anda',
-        data: [ageDetails.years, ageDetails.months, ageDetails.days],
-        backgroundColor: [
-          'rgba(139, 92, 246, 0.8)',
-          'rgba(236, 72, 153, 0.8)',
-          'rgba(59, 130, 246, 0.8)'
-        ],
-        borderRadius: 8
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: {
-          display: false
-        },
-        title: {
-          display: true,
-          text: 'Breakdown Umur'
-        }
+
+  // ---------- LIFE BATTERY ----------
+  function renderBattery(years) {
+    const total = SETTINGS.lifeExpectancy;
+    const cells = $('#batteryCells');
+    cells.innerHTML = '';
+    const filled = Math.min(Math.floor(years), total);
+    for (let i = 0; i < total; i++) {
+      const s = document.createElement('span');
+      if (i < filled) s.classList.add('on');
+      else if (i === filled) s.classList.add('now');
+      cells.appendChild(s);
+    }
+    // adjust grid columns dynamically (50–120)
+    cells.style.gridTemplateColumns = `repeat(${Math.min(40, total)}, 1fr)`;
+    const pct = Math.min(100, Math.round((years / total) * 100));
+    $('#batteryPct').textContent = `${pct}%`;
+    $('#livedYears').textContent = `${Math.floor(years)}${t('years_short') || 'y'}`;
+    const remain = Math.max(0, total - Math.floor(years));
+    $('#remainYears').textContent = `${remain}${t('years_short') || 'y'}`;
+  }
+
+  // ---------- ALLOCATION CHART ----------
+  let allocChart;
+  function renderAlloc(years) {
+    const ctx = $('#allocChart').getContext('2d');
+    const labels = [
+      t('alloc_sleep'),
+      t('alloc_work'),
+      t('alloc_eat'),
+      t('alloc_screen'),
+      t('alloc_travel'),
+      t('alloc_other')
+    ];
+    // recalculate based on work hours setting
+    const work = SETTINGS.workHours;        // hours / day
+    const sleep = 8;                         // assumed
+    const eat = 1.5;
+    const travel = 1;
+    const screen = 3.5;
+    const other = Math.max(0, 24 - work - sleep - eat - travel - screen);
+    const total = work + sleep + eat + travel + screen + other;
+    const pct = arr => arr.map(h => Math.round((h / total) * 1000) / 10);
+    const data = pct([sleep, work, eat, screen, travel, other]);
+    const colors = ['#d4a24c','#c44536','#6e8b5a','#7a8da6','#a07b4f','#5b5950'];
+
+    if (allocChart) allocChart.destroy();
+    allocChart = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels,
+        datasets: [{
+          data,
+          backgroundColor: colors,
+          borderColor: getComputedStyle(document.body).getPropertyValue('--bg-card').trim(),
+          borderWidth: 2,
+          hoverOffset: 8
+        }]
       },
-      scales: {
-        y: {
-          beginAtZero: true
-        }
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '62%',
+        plugins: { legend: { display: false }, tooltip: { enabled: false } },
+        animation: { animateRotate: true, duration: SETTINGS.motion === 'off' ? 0 : 900 }
       }
-    }
-  });
-}
-
-// Generate achievements timeline
-function generateAchievementsTimeline(ageDetails) {
-  const container = document.getElementById('achievementsTimeline');
-  const years = ageDetails.years;
-  
-  const milestones = [
-    { age: 1, title: "Langkah Pertama", icon: "👶", achieved: years >= 1 },
-    { age: 5, title: "Mulai Sekolah", icon: "🎒", achieved: years >= 5 },
-    { age: 10, title: "Satu Dekade", icon: "🎂", achieved: years >= 10 },
-    { age: 18, title: "Dewasa Secara Hukum", icon: "🗳️", achieved: years >= 18 },
-    { age: 21, title: "Era Dua Puluhan", icon: "🍾", achieved: years >= 21 },
-    { age: 25, title: "Seperempat Abad", icon: "🏆", achieved: years >= 25 },
-    { age: 30, title: "Tiga Puluh Tahun Bijaksana", icon: "🧠", achieved: years >= 30 },
-    { age: 40, title: "Kehidupan Dimulai", icon: "🌟", achieved: years >= 40 },
-    { age: 50, title: "Setengah Abad", icon: "👑", achieved: years >= 50 }
-  ];
-  
-  container.innerHTML = milestones.map(milestone => `
-    <div class="flex items-center p-4 rounded-xl transition-all duration-300 ${
-      milestone.achieved 
-        ? 'bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/30 border-l-4 border-green-500' 
-        : 'bg-gray-100 dark:bg-gray-700/50 border-l-4 border-gray-300'
-    }">
-      <div class="text-4xl mr-4">${milestone.icon}</div>
-      <div class="flex-1">
-        <h4 class="font-bold text-gray-800 dark:text-white">${milestone.title}</h4>
-        <p class="text-sm text-gray-600 dark:text-gray-300">Usia ${milestone.age} tahun</p>
-      </div>
-      <div class="text-2xl">
-        ${milestone.achieved ? '✅' : '⏳'}
-      </div>
-    </div>
-  `).join('');
-}
-
-// Check if it's birthday and show floating cake
-function checkBirthdayAndShowCake(birthDate) {
-  const today = new Date();
-  const isToday = birthDate.getMonth() === today.getMonth() && 
-                  birthDate.getDate() === today.getDate();
-  
-  const floatingCake = document.getElementById('floatingCake');
-  if (isToday) {
-    floatingCake.classList.remove('hidden');
-    gsap.to(floatingCake, {
-      rotation: 360,
-      duration: 4,
-      repeat: -1,
-      ease: "none"
     });
-  } else {
-    floatingCake.classList.add('hidden');
-  }
-}
 
-// Download result as image
-window.downloadAsImage = function() {
-  // Implementation for downloading result as image
-  const resultElement = document.getElementById('result');
-  
-  html2canvas(resultElement).then(canvas => {
+    const legend = $('#allocLegend');
+    legend.innerHTML = '';
+    labels.forEach((lbl, i) => {
+      const yrs = (years * data[i] / 100).toFixed(1);
+      const li = document.createElement('li');
+      li.innerHTML = `
+        <span class="swatch" style="background:${colors[i]}"></span>
+        <span>${lbl}</span>
+        <span class="pct">${data[i]}%</span>
+        <span class="yrs">${yrs}${t('years_short')}</span>`;
+      legend.appendChild(li);
+    });
+  }
+
+  // ---------- COSMIC ODOMETER (live) ----------
+  function renderOdometer(dob) {
+    function tick() {
+      const now = new Date();
+      const ms = now - dob;
+      const secs = ms / 1000;
+      const days = secs / 86400;
+      const years = days / 365.25;
+
+      // 80 bpm avg, 16 breaths/min, 17 blinks/min
+      $('#odoHeart').textContent  = fmt(secs * (80 / 60));
+      $('#odoBreath').textContent = fmt(secs * (16 / 60));
+      $('#odoBlink').textContent  = fmt(secs * (17 / 60));
+      $('#odoOrbit').textContent  = years.toFixed(2);
+      $('#odoMoon').textContent   = (days / 29.530589).toFixed(1);
+      $('#odoSpin').textContent   = fmt(days);
+    }
+    tick();
+    return setInterval(tick, 1000);
+  }
+
+  // ---------- LIVE TICKER (hero) ----------
+  function startTicker(dob) {
+    if (state.tickerId) clearInterval(state.tickerId);
+    function tick() {
+      const a = ageDetails(dob);
+      $('#bigYears').textContent = a.y;
+      $('#bigMonths').textContent = a.m;
+      $('#bigDays').textContent = a.d;
+      const totalSecLeft = a.ms / 1000;
+      const hr = Math.floor(totalSecLeft / 3600) % 24;
+      const mn = Math.floor(totalSecLeft / 60) % 60;
+      const sc = Math.floor(totalSecLeft) % 60;
+      $('#bigHours').textContent = hr;
+      $('#bigMins').textContent = mn;
+      $('#bigSecs').textContent = sc;
+
+      $('#numWeeks').textContent = fmt(a.totalWeeks);
+      $('#numDays').textContent  = fmt(a.totalDays);
+      $('#numHours').textContent = fmt(a.totalHours);
+      $('#numMins').textContent  = fmt(a.totalMins);
+      $('#numSecs').textContent  = fmt(a.totalSecs);
+    }
+    tick();
+    state.tickerId = setInterval(tick, 1000);
+  }
+
+  // ---------- COUNTDOWN ----------
+  function startCountdown(dob) {
+    if (state.cdId) clearInterval(state.cdId);
+    function tick() {
+      const now = new Date();
+      if (isBirthdayToday(dob, now)) {
+        $('#cdDays').textContent = '0';
+        $('#cdHrs').textContent = '0';
+        $('#cdMin').textContent = '0';
+        $('#cdSec').textContent = '0';
+        $('#cdMessage').textContent = t('today_is_bday');
+        return;
+      }
+      const next = nextBirthday(dob, now);
+      const ms = next - now;
+      const d = Math.floor(ms / 86400000);
+      const h = Math.floor((ms / 3600000) % 24);
+      const m = Math.floor((ms / 60000) % 60);
+      const s = Math.floor((ms / 1000) % 60);
+      $('#cdDays').textContent = d;
+      $('#cdHrs').textContent = pad(h);
+      $('#cdMin').textContent = pad(m);
+      $('#cdSec').textContent = pad(s);
+      $('#cdMessage').textContent = t('in_days').replace('{n}', d);
+    }
+    tick();
+    state.cdId = setInterval(tick, 1000);
+  }
+
+  // ---------- TIMELINE ----------
+  function renderTimeline(dob) {
+    const list = $('#timelineList');
+    list.innerHTML = '';
+    const milestones = [
+      { age: 0,  key: 'birth' },
+      { age: 1,  key: 'walking' },
+      { age: 6,  key: 'school' },
+      { age: 10, key: 'decade' },
+      { age: 13, key: 'teen' },
+      { age: 18, key: 'adult' },
+      { age: 20, key: 'twenties' },
+      { age: 25, key: 'quarter' },
+      { age: 30, key: 'thirty' },
+      { age: 40, key: 'forty' },
+      { age: 50, key: 'half' },
+      { age: 60, key: 'sixty' },
+      { age: 70, key: 'seventy' },
+      { age: 80, key: 'eighty' }
+    ];
+    const now = new Date();
+    const a = ageDetails(dob, now);
+    const dict = I18N[CURRENT_LANG] || I18N.id;
+
+    milestones.forEach(ms => {
+      const when = new Date(dob.getFullYear() + ms.age, dob.getMonth(), dob.getDate());
+      const li = document.createElement('li');
+      let cls;
+      if (a.y > ms.age) cls = 'passed';
+      else if (a.y === ms.age) cls = 'now';
+      else cls = 'future';
+      li.classList.add(cls);
+
+      const dateStr = `${pad(when.getDate())} ${dict.months_full[when.getMonth()]} ${when.getFullYear()}`;
+      const ageLbl = `${pad(ms.age, 2)} · ${t('ml.' + ms.key)}`;
+      li.innerHTML = `
+        <div class="tl-age">${ageLbl}</div>
+        <div class="tl-when">${t('ml.' + ms.key)}</div>
+        <p class="tl-desc">${t('ml.' + ms.key + '_desc')}</p>
+        <div class="tl-date">${dateStr}</div>
+      `;
+      list.appendChild(li);
+    });
+  }
+
+  // ---------- COSMOS ----------
+  function renderCosmos(dob) {
+    const a = ageDetails(dob);
+    const root = $('#cosmosList');
+    root.innerHTML = '';
+    const sleep = Math.floor(a.totalDays * 0.33);
+    const meals = Math.floor(a.totalDays * 3);
+    const seasons = Math.floor(a.y * 4 + a.m / 3);
+    const sunrises = Math.floor(a.totalDays);
+
+    const moonwalk = new Date(1969, 6, 20);
+    const web = new Date(1991, 7, 6);
+    const sinceMoon = ageDetails(moonwalk, new Date());
+    const sinceWeb = ageDetails(web, new Date());
+    const moonSpan = `${sinceMoon.y} ${t('years_short')}`;
+    const webSpan  = `${sinceWeb.y} ${t('years_short')}`;
+
+    const rows = [
+      { ico: '☾', h: t('cs.sleep'),    v: `${fmt(sleep)} ${t('days')}`, d: t('cs.sleep_d').replace('{n}', fmt(sleep)) },
+      { ico: '⊞', h: t('cs.eaten'),    v: `${fmt(meals)}`,              d: t('cs.eaten_d').replace('{n}', fmt(meals)) },
+      { ico: '✦', h: t('cs.seasons'),  v: `${seasons}`,                  d: t('cs.seasons_d').replace('{n}', seasons) },
+      { ico: '☀', h: t('cs.sunrise'),  v: `${fmt(sunrises)}`,            d: t('cs.sunrise_d').replace('{n}', fmt(sunrises)) },
+      { ico: '◐', h: t('cs.moonwalk'), v: moonSpan,                      d: t('cs.moonwalk_d').replace('{n}', moonSpan) },
+      { ico: '⌘', h: t('cs.internet'), v: webSpan,                       d: t('cs.internet_d').replace('{n}', webSpan) },
+      { ico: '∞', h: 'Einstein', v: '26', d: t('cs.einstein') },
+      { ico: '♪', h: 'Mozart',   v: '35', d: t('cs.mozart') }
+    ];
+    rows.forEach(r => {
+      const div = document.createElement('div');
+      div.className = 'cs-row';
+      div.innerHTML = `
+        <div class="cs-ico">${r.ico}</div>
+        <div>
+          <h3 class="cs-h">${r.h}</h3>
+          <p class="cs-v">${r.v}</p>
+          <p class="cs-d">${r.d}</p>
+        </div>`;
+      root.appendChild(div);
+    });
+  }
+
+  // ---------- HOROSCOPE ----------
+  function renderHoroscope(zName) {
+    const dict = HOROSCOPE[CURRENT_LANG] || HOROSCOPE.id;
+    const text = dict[zName] || '';
+    $('#horoText').textContent = text;
+    const months = (I18N[CURRENT_LANG] || I18N.id).months_full;
+    const now = new Date();
+    $('#horoDate').textContent = `${pad(now.getDate())} ${months[now.getMonth()].toUpperCase()} ${now.getFullYear()}`;
+  }
+
+  // ---------- DAY-OF-WEEK TRIVIA ----------
+  function renderTrivia(dob) {
+    const dict = I18N[CURRENT_LANG] || I18N.id;
+    const dow = dict.dow[dob.getDay()];
+    $('#triviaDay').textContent = dow;
+    $('#triviaQuote').textContent = dict.dow_quote[dow] || '';
+    $('#dayOfWeek').textContent = dow;
+  }
+
+  // ---------- BORN FULL ----------
+  function renderBorn(dob) {
+    const dict = I18N[CURRENT_LANG] || I18N.id;
+    $('#bornFull').textContent = `${pad(dob.getDate())} ${dict.months_full[dob.getMonth()]} ${dob.getFullYear()}`;
+  }
+
+  // ---------- GENERATION ----------
+  function getGeneration(year) {
+    if (year < 1928) return 'Greatest Gen';
+    if (year < 1946) return 'Silent Gen';
+    if (year < 1965) return 'Boomer';
+    if (year < 1981) return 'Gen X';
+    if (year < 1997) return 'Millennial';
+    if (year < 2013) return 'Gen Z';
+    if (year < 2025) return 'Gen Alpha';
+    return 'Gen Beta';
+  }
+
+  // ---------- YEAR PROGRESS ----------
+  function renderYearProgress(dob) {
+    const now = new Date();
+    const dict = I18N[CURRENT_LANG] || I18N.id;
+    $('#yearProgYear').textContent = now.getFullYear();
+
+    // personal year: from last birthday → next birthday
+    const lastBday = (() => {
+      let b = new Date(now.getFullYear(), dob.getMonth(), dob.getDate());
+      if (b > now) b = new Date(now.getFullYear() - 1, dob.getMonth(), dob.getDate());
+      return b;
+    })();
+    const nextBday = nextBirthday(dob, now);
+    const personalSpan = nextBday - lastBday;
+    const personalDone = now - lastBday;
+    const personalPct = Math.min(100, Math.max(0, (personalDone / personalSpan) * 100));
+    $('#ypPersonalFill').style.width = personalPct.toFixed(2) + '%';
+    $('#ypPersonalPct').textContent = personalPct.toFixed(1) + '%';
+    const a = ageDetails(dob, now);
+    $('#ypPersonalAge').textContent = `${dict.age_summary
+      .replace('{y}', a.y).replace('{m}', a.m).replace('{d}', a.d)}`;
+
+    // calendar year
+    const yStart = new Date(now.getFullYear(), 0, 1);
+    const yEnd = new Date(now.getFullYear() + 1, 0, 1);
+    const calPct = ((now - yStart) / (yEnd - yStart)) * 100;
+    $('#ypCalFill').style.width = calPct.toFixed(2) + '%';
+    $('#ypCalPct').textContent = calPct.toFixed(1) + '%';
+    const dayOfYear = Math.floor((now - yStart) / 86400000) + 1;
+    $('#ypCalAge').textContent = `${t('day_of_year').replace('{n}', dayOfYear)}`;
+
+    // today progress
+    const dayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const dayPct = ((now - dayStart) / 86400000) * 100;
+    $('#ypDayFill').style.width = dayPct.toFixed(2) + '%';
+    $('#ypDayPct').textContent = dayPct.toFixed(1) + '%';
+    $('#ypDayHint').textContent = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+  }
+
+  // ---------- MILESTONE MOMENTS ----------
+  function renderMoments(dob) {
+    const list = $('#momentsList');
+    list.innerHTML = '';
+    const now = new Date();
+    const dict = I18N[CURRENT_LANG] || I18N.id;
+
+    // round-number targets in seconds
+    const targets = [
+      { unit: 'days', label: t('days'), pretty: '10,000 ' + t('days_short').toUpperCase(),
+        msPerUnit: 86400000, target: 10000 },
+      { unit: 'days', label: t('days'), pretty: '20,000 ' + t('days_short').toUpperCase(),
+        msPerUnit: 86400000, target: 20000 },
+      { unit: 'hours', label: t('hours'), pretty: '100,000 ' + t('hours_short').toUpperCase(),
+        msPerUnit: 3600000, target: 100000 },
+      { unit: 'hours', label: t('hours'), pretty: '500,000 ' + t('hours_short').toUpperCase(),
+        msPerUnit: 3600000, target: 500000 },
+      { unit: 'mins', label: t('minutes'), pretty: '1M ' + t('mins_short').toUpperCase(),
+        msPerUnit: 60000, target: 1000000 },
+      { unit: 'mins', label: t('minutes'), pretty: '10M ' + t('mins_short').toUpperCase(),
+        msPerUnit: 60000, target: 10000000 },
+      { unit: 'secs', label: t('seconds'), pretty: '1B ' + t('secs_short').toUpperCase(),
+        msPerUnit: 1000, target: 1000000000 },
+      { unit: 'secs', label: t('seconds'), pretty: '2B ' + t('secs_short').toUpperCase(),
+        msPerUnit: 1000, target: 2000000000 }
+    ];
+
+    targets.forEach(tgt => {
+      const reachAt = new Date(dob.getTime() + tgt.target * tgt.msPerUnit);
+      const reached = reachAt <= now;
+      const li = document.createElement('li');
+      if (reached) li.classList.add('reached');
+
+      let when;
+      if (reached) {
+        const ago = ageDetails(reachAt, now);
+        when = `<strong>✓</strong> ${pad(reachAt.getDate())} ${dict.months_full[reachAt.getMonth()]} ${reachAt.getFullYear()}`;
+      } else {
+        const diff = reachAt - now;
+        const days = Math.ceil(diff / 86400000);
+        when = days < 365
+          ? `${days} ${t('days_to_go')}`
+          : `${pad(reachAt.getDate())} ${dict.months_full[reachAt.getMonth()]} ${reachAt.getFullYear()}`;
+      }
+
+      li.innerHTML = `
+        <span class="moments__nm">${tgt.pretty}</span>
+        <span class="moments__lbl">${tgt.label}</span>
+        <span class="moments__when">${when}</span>`;
+      list.appendChild(li);
+    });
+  }
+
+  // ---------- LIFE IN WEEKS ----------
+  function renderWeeks(dob) {
+    const grid = $('#weeksGrid');
+    grid.innerHTML = '';
+    const totalYears = SETTINGS.lifeExpectancy;
+    const totalWeeks = totalYears * 52;
+    const now = new Date();
+    const livedMs = now - dob;
+    const livedWeeks = Math.floor(livedMs / (86400000 * 7));
+
+    for (let i = 0; i < totalWeeks; i++) {
+      const s = document.createElement('span');
+      if (i < livedWeeks) s.classList.add('on');
+      else if (i === livedWeeks) s.classList.add('now');
+      const yearN = Math.floor(i / 52);
+      const weekN = (i % 52) + 1;
+      s.title = `Year ${yearN + 1} · Week ${weekN}`;
+      grid.appendChild(s);
+    }
+
+    $('#weeksLived').textContent = fmt(livedWeeks);
+    $('#weeksLeft').textContent = fmt(Math.max(0, totalWeeks - livedWeeks));
+    $('#weeksPct').textContent = ((livedWeeks / totalWeeks) * 100).toFixed(1) + '%';
+  }
+
+  // ---------- BIORHYTHM ----------
+  // Classic biorhythm pseudoscience: 3 sine waves from birth.
+  // physical 23d, emotional 28d, intellectual 33d.
+  let bioChart;
+  function bioValueAt(daysSinceBirth, period) {
+    return Math.sin((2 * Math.PI * daysSinceBirth) / period);
+  }
+  function renderBiorhythm(dob) {
+    const ctx = $('#bioChart').getContext('2d');
+    const now = new Date();
+    const daysNow = (now - dob) / 86400000;
+    const range = 30;       // ±15 days around today
+    const labels = [], pData = [], eData = [], iData = [];
+    for (let i = -15; i <= 15; i++) {
+      labels.push(i === 0 ? '●' : (i > 0 ? `+${i}` : `${i}`));
+      pData.push(bioValueAt(daysNow + i, 23) * 100);
+      eData.push(bioValueAt(daysNow + i, 28) * 100);
+      iData.push(bioValueAt(daysNow + i, 33) * 100);
+    }
+
+    if (bioChart) bioChart.destroy();
+    const ink = getComputedStyle(document.body).getPropertyValue('--ink-mute').trim();
+    const lineSoft = getComputedStyle(document.body).getPropertyValue('--line-soft').trim();
+    bioChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          { label: 'Physical',     data: pData, borderColor: '#d4a24c', borderWidth: 2, tension: .35, pointRadius: 0, fill: false },
+          { label: 'Emotional',    data: eData, borderColor: '#c44536', borderWidth: 2, tension: .35, pointRadius: 0, fill: false },
+          { label: 'Intellectual', data: iData, borderColor: '#6e8b5a', borderWidth: 2, tension: .35, pointRadius: 0, fill: false }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { enabled: false } },
+        scales: {
+          y: {
+            min: -110, max: 110,
+            grid: { color: lineSoft, drawTicks: false },
+            ticks: { color: ink, font: { size: 10, family: 'JetBrains Mono' }, stepSize: 50 }
+          },
+          x: {
+            grid: { color: lineSoft, drawTicks: false },
+            ticks: { color: ink, font: { size: 10, family: 'JetBrains Mono' }, maxTicksLimit: 7 }
+          }
+        },
+        animation: { duration: SETTINGS.motion === 'off' ? 0 : 900 }
+      }
+    });
+
+    const todayValues = {
+      Physical:     Math.round(bioValueAt(daysNow, 23) * 100),
+      Emotional:    Math.round(bioValueAt(daysNow, 28) * 100),
+      Intellectual: Math.round(bioValueAt(daysNow, 33) * 100)
+    };
+    const swatches = { Physical: '#d4a24c', Emotional: '#c44536', Intellectual: '#6e8b5a' };
+    const labelI18n = { Physical: t('bio_physical'), Emotional: t('bio_emotional'), Intellectual: t('bio_intellectual') };
+    const periods   = { Physical: '23 ' + t('days_short').toUpperCase(), Emotional: '28 ' + t('days_short').toUpperCase(), Intellectual: '33 ' + t('days_short').toUpperCase() };
+
+    const legend = $('#bioLegend');
+    legend.innerHTML = '';
+    Object.keys(todayValues).forEach(k => {
+      const v = todayValues[k];
+      const li = document.createElement('li');
+      li.innerHTML = `
+        <span class="swatch" style="background:${swatches[k]}"></span>
+        <span class="bio-name">${labelI18n[k]}<small>${periods[k]}</small></span>
+        <span class="bio-pct ${v < 0 ? 'neg' : ''}">${v > 0 ? '+' : ''}${v}%</span>`;
+      legend.appendChild(li);
+    });
+
+    const months = (I18N[CURRENT_LANG] || I18N.id).months_full;
+    $('#bioToday').textContent = `${pad(now.getDate())} ${months[now.getMonth()].toUpperCase()} ${now.getFullYear()}`;
+  }
+
+  // ---------- COMPARE TWO SUBJECTS ----------
+  function runCompare() {
+    const dobA = $('#cmpDobA').value;
+    const dobB = $('#cmpDobB').value;
+    const nameA = $('#cmpNameA').value.trim() || t('subject_a').replace(/\s/g,' ').replace('SUBJECT A','Subject A');
+    const nameB = $('#cmpNameB').value.trim() || 'Subject B';
+    if (!dobA || !dobB) { toast(t('cmp_need_both')); return; }
+
+    const dA = new Date(dobA), dB = new Date(dobB);
+    if (dA > new Date() || dB > new Date()) { toast(t('future_dob')); return; }
+    const dict = I18N[CURRENT_LANG] || I18N.id;
+
+    const aDet = ageDetails(dA);
+    const bDet = ageDetails(dB);
+    const older = dA < dB ? 'A' : 'B';
+
+    $('#cmpOut').hidden = false;
+    $('#cmpOutNameA').textContent = nameA;
+    $('#cmpOutNameB').textContent = nameB;
+    $('#cmpOutAgeA').textContent = `${aDet.y}${t('years_short')} ${aDet.m}${t('months_short')}`;
+    $('#cmpOutAgeB').textContent = `${bDet.y}${t('years_short')} ${bDet.m}${t('months_short')}`;
+    $('#cmpOutDobA').textContent = `${pad(dA.getDate())}/${pad(dA.getMonth()+1)}/${dA.getFullYear()}`;
+    $('#cmpOutDobB').textContent = `${pad(dB.getDate())}/${pad(dB.getMonth()+1)}/${dB.getFullYear()}`;
+    $('#cmpOutGenA').textContent = getGeneration(dA.getFullYear()).toUpperCase();
+    $('#cmpOutGenB').textContent = getGeneration(dB.getFullYear()).toUpperCase();
+
+    $('#cmpSideA').classList.toggle('older', older === 'A');
+    $('#cmpSideB').classList.toggle('older', older === 'B');
+
+    // diff
+    const diffMs = Math.abs(dA - dB);
+    const diffDet = ageDetails(
+      dA < dB ? dA : dB,
+      dA < dB ? dB : dA
+    );
+    $('#cmpDiff').textContent = `${diffDet.y}${t('years_short')} ${diffDet.m}${t('months_short')} ${diffDet.d}${t('days_short')}`;
+    $('#cmpSecsApart').textContent = fmt(diffMs / 1000);
+
+    // birthday gap (calendar days between birthdays)
+    const bdayA = new Date(2000, dA.getMonth(), dA.getDate());
+    const bdayB = new Date(2000, dB.getMonth(), dB.getDate());
+    let bdayGap = Math.abs(Math.round((bdayA - bdayB) / 86400000));
+    if (bdayGap > 182) bdayGap = 365 - bdayGap;
+    $('#cmpBdayGap').textContent = `${bdayGap} ${t('days')}`;
+
+    const zA = getZodiac(dA.getMonth() + 1, dA.getDate());
+    const zB = getZodiac(dB.getMonth() + 1, dB.getDate());
+    $('#cmpZodiacMatch').textContent = zA.name === zB.name
+      ? `✓ ${zA.name}`
+      : `${zA.sigil} / ${zB.sigil}`;
+
+    const cA = getChinese(dA.getFullYear());
+    const cB = getChinese(dB.getFullYear());
+    $('#cmpChineseMatch').textContent = cA.name === cB.name
+      ? `✓ ${cA.name}`
+      : `${cA.glyph} / ${cB.glyph}`;
+
+    // verdict
+    const olderName = older === 'A' ? nameA : nameB;
+    const youngerName = older === 'A' ? nameB : nameA;
+    let verdict = t('cmp_verdict_diff')
+      .replace('{older}', olderName)
+      .replace('{younger}', youngerName)
+      .replace('{y}', diffDet.y)
+      .replace('{m}', diffDet.m)
+      .replace('{d}', diffDet.d);
+    if (diffMs < 86400000) verdict = t('cmp_verdict_same').replace('{a}', nameA).replace('{b}', nameB);
+    $('#cmpVerdict').textContent = verdict;
+  }
+
+  // ---------- MAIN RENDER ----------
+  function renderAlmanac(dobStr, name = '') {
+    const dob = (dobStr instanceof Date) ? dobStr : new Date(dobStr);
+    if (isNaN(dob.getTime())) { toast(t('no_dob')); return; }
+    if (dob > new Date()) { toast(t('future_dob')); return; }
+
+    state.dob = dob;
+    state.name = name || '';
+    window.__lastDob = dobStr;
+    window.__lastName = state.name;
+
+    $('#emptyState').hidden = true;
+    $('#results').hidden = false;
+
+    $('#subjectName').textContent = state.name || t('no_subject');
+    renderBorn(dob);
+    renderTrivia(dob);
+
+    const a = ageDetails(dob);
+    renderBattery(a.y + a.m / 12);
+    renderAlloc(a.y + a.m / 12);
+
+    const z = getZodiac(dob.getMonth() + 1, dob.getDate());
+    $('#zodiacSigil').textContent = z.sigil;
+    $('#zodiacName').textContent = z.name;
+    $('#zodiacRange').textContent = `${pad(z.start[1])}/${pad(z.start[0])} → ${pad(z.end[1])}/${pad(z.end[0])}`;
+    $('#zodiacElement').textContent = z.element;
+
+    // chinese zodiac
+    const cz = getChinese(dob.getFullYear());
+    $('#chineseGlyph').textContent = cz.glyph;
+    $('#chineseName').textContent = cz.name;
+    $('#chineseElement').textContent = cz.element.toUpperCase();
+
+    // life path
+    const lp = getLifePath(dob);
+    $('#lifePathNum').textContent = lp;
+    $('#lifePathTrait').textContent = (LIFE_PATH_TRAITS[lp] || '').toUpperCase();
+
+    // year progress
+    renderYearProgress(dob);
+    // milestone moments
+    renderMoments(dob);
+    // life in weeks
+    renderWeeks(dob);
+    // biorhythm
+    renderBiorhythm(dob);
+
+    // count-up the big year number on first paint
+    if (!state.dob || +state.dob !== +dob) {
+      countUp($('#bigYears'), ageDetails(dob).y);
+    }
+
+    renderHoroscope(z.name);
+    renderTimeline(dob);
+    renderCosmos(dob);
+
+    if (state.odoId) clearInterval(state.odoId);
+    state.odoId = renderOdometer(dob);
+
+    startTicker(dob);
+    startCountdown(dob);
+
+    if (isBirthdayToday(dob)) celebrate();
+  }
+  window.renderAlmanac = renderAlmanac;
+
+  // ---------- REVERSE DATE ----------
+  function reverseDate() {
+    const y = parseInt($('#rYears').value) || 0;
+    const m = parseInt($('#rMonths').value) || 0;
+    const d = parseInt($('#rDays').value) || 0;
+    if (y === 0 && m === 0 && d === 0) { toast(t('invalid_age')); return; }
+    const now = new Date();
+    const result = new Date(now.getFullYear() - y, now.getMonth() - m, now.getDate() - d);
+    const dict = I18N[CURRENT_LANG] || I18N.id;
+    const out = $('#reverseOut');
+    out.hidden = false;
+    $('#reverseDate').textContent = `${dict.dow[result.getDay()]}, ${pad(result.getDate())} ${dict.months_full[result.getMonth()]} ${result.getFullYear()}`;
+    const ms = now - result;
+    $('#reverseExtra').textContent = `${fmt(ms / 86400000)} ${dict.days_short.toUpperCase()} · ${fmt(ms / 3600000)} ${dict.hours_short.toUpperCase()}`;
+  }
+
+  // ---------- ARCHIVE ----------
+  const ARCHIVE_KEY = 'almanac.archive';
+  function loadArchive() {
+    try { return JSON.parse(localStorage.getItem(ARCHIVE_KEY) || '[]'); }
+    catch { return []; }
+  }
+  function saveArchive(list) { localStorage.setItem(ARCHIVE_KEY, JSON.stringify(list)); }
+
+  function saveCurrent() {
+    if (!state.dob) { toast(t('no_dob')); return; }
+    const list = loadArchive();
+    const entry = {
+      id: Date.now(),
+      name: state.name || t('no_subject'),
+      dob: state.dob.toISOString().slice(0, 10)
+    };
+    if (list.some(e => e.dob === entry.dob && e.name === entry.name)) {
+      toast(t('saved_archive'));
+      return;
+    }
+    list.unshift(entry);
+    saveArchive(list);
+    renderArchive();
+    toast(t('saved_archive'));
+  }
+
+  function renderArchive() {
+    const list = loadArchive();
+    const ul = $('#archiveList');
+    const dict = I18N[CURRENT_LANG] || I18N.id;
+    $('#archiveCount').textContent = `${list.length} ${list.length === 1 ? 'ENTRY' : 'ENTRIES'}`;
+    ul.innerHTML = '';
+    if (!list.length) {
+      ul.innerHTML = `<li class="archive__empty">${t('archive_empty')}</li>`;
+      return;
+    }
+    list.forEach((e, i) => {
+      const dob = new Date(e.dob);
+      const a = ageDetails(dob);
+      const li = document.createElement('li');
+      li.className = 'ar-row';
+      li.innerHTML = `
+        <span class="ar-num">№ ${pad(list.length - i, 3)}</span>
+        <span class="ar-name">${e.name}</span>
+        <span class="ar-dob">${pad(dob.getDate())} · ${pad(dob.getMonth()+1)} · ${dob.getFullYear()}</span>
+        <span class="ar-age">${a.y} ${t('years_short')} ${a.m} ${t('months_short')}</span>
+        <span class="ar-actions">
+          <button data-id="${e.id}" data-act="open">↳ Open</button>
+          <button data-id="${e.id}" data-act="del">✕</button>
+        </span>`;
+      ul.appendChild(li);
+    });
+  }
+  window.renderArchive = renderArchive;
+
+  function clearArchive() {
+    if (!confirm('Hapus semua arsip?')) return;
+    saveArchive([]);
+    renderArchive();
+    toast(t('cleared_archive'));
+  }
+
+  // ---------- EXPORTS ----------
+  function exportPDF() {
+    if (!state.dob) { toast(t('no_dob')); return; }
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+    const dob = state.dob;
+    const a = ageDetails(dob);
+    const z = getZodiac(dob.getMonth() + 1, dob.getDate());
+    const dict = I18N[CURRENT_LANG] || I18N.id;
+    const W = 210, H = 297;
+
+    // border
+    doc.setDrawColor(140, 110, 50);
+    doc.setLineWidth(0.6);
+    doc.rect(12, 12, W - 24, H - 24);
+    doc.setLineWidth(0.2);
+    doc.rect(15, 15, W - 30, H - 30);
+
+    // kicker
+    doc.setFont('courier', 'normal');
+    doc.setFontSize(9);
+    doc.setTextColor(140, 110, 50);
+    doc.text('THE AGE ALMANAC · CERTIFICATE OF CHRONOMETRY', W/2, 28, { align: 'center' });
+
+    // title
+    doc.setFont('times', 'normal');
+    doc.setFontSize(42);
+    doc.setTextColor(30, 28, 22);
+    doc.text('Certificate', W/2, 60, { align: 'center' });
+    doc.setFont('times', 'italic');
+    doc.text('of a life thus far', W/2, 75, { align: 'center' });
+
+    // separator
+    doc.setLineWidth(0.3);
+    doc.setDrawColor(200, 180, 140);
+    doc.line(60, 86, W - 60, 86);
+
+    // body
+    doc.setFont('times', 'normal');
+    doc.setFontSize(13);
+    doc.setTextColor(60, 55, 45);
+    doc.text('This is to certify that', W/2, 100, { align: 'center' });
+
+    doc.setFont('times', 'italic');
+    doc.setFontSize(28);
+    doc.setTextColor(20, 18, 14);
+    doc.text(state.name || t('no_subject'), W/2, 115, { align: 'center' });
+
+    doc.setFont('times', 'normal');
+    doc.setFontSize(12);
+    doc.setTextColor(60, 55, 45);
+    doc.text('born on', W/2, 130, { align: 'center' });
+    doc.setFont('times', 'italic');
+    doc.setFontSize(18);
+    const bornStr = `${dict.dow[dob.getDay()]}, ${pad(dob.getDate())} ${dict.months_full[dob.getMonth()]} ${dob.getFullYear()}`;
+    doc.text(bornStr, W/2, 142, { align: 'center' });
+
+    doc.setFont('times', 'normal');
+    doc.setFontSize(12);
+    doc.text('has accumulated', W/2, 158, { align: 'center' });
+
+    doc.setFont('times', 'italic');
+    doc.setFontSize(36);
+    doc.setTextColor(140, 110, 50);
+    doc.text(`${a.y} years`, W/2, 175, { align: 'center' });
+
+    doc.setFont('courier', 'normal');
+    doc.setFontSize(10);
+    doc.setTextColor(80, 75, 65);
+    doc.text(`${a.m} MONTHS · ${a.d} DAYS · ${fmt(a.totalDays)} TOTAL DAYS`, W/2, 184, { align: 'center' });
+
+    // separator
+    doc.setDrawColor(200, 180, 140);
+    doc.line(60, 198, W - 60, 198);
+
+    // stats grid
+    doc.setFont('courier', 'normal');
+    doc.setFontSize(9);
+    doc.setTextColor(100, 90, 70);
+    const statsY = 212;
+    doc.text('ZODIAC', 35, statsY);
+    doc.text('HEARTBEATS', 90, statsY);
+    doc.text('BREATHS', 145, statsY);
+
+    doc.setFont('times', 'normal');
+    doc.setFontSize(16);
+    doc.setTextColor(30, 28, 22);
+    doc.text(`${z.sigil} ${z.name}`, 35, statsY + 8);
+    doc.text(fmt(a.totalSecs * (80/60)), 90, statsY + 8);
+    doc.text(fmt(a.totalSecs * (16/60)), 145, statsY + 8);
+
+    // signature line
+    doc.setLineWidth(0.2);
+    doc.setDrawColor(180, 160, 120);
+    doc.line(W/2 - 40, 252, W/2 + 40, 252);
+    doc.setFont('courier', 'normal');
+    doc.setFontSize(8);
+    doc.setTextColor(140, 110, 50);
+    doc.text('THE EDITOR · THE AGE ALMANAC', W/2, 258, { align: 'center' });
+
+    // footer
+    doc.setFontSize(7);
+    doc.setTextColor(140, 130, 110);
+    doc.text(`PRINTED ON ${new Date().toISOString().slice(0,10).toUpperCase()} · MMXXVI · № ${String(Date.now()).slice(-6)}`, W/2, 278, { align: 'center' });
+
+    const filename = (state.name || 'subject').toString().replace(/\s+/g, '-').toLowerCase();
+    doc.save(`almanac-${filename}.pdf`);
+  }
+
+  async function exportImage() {
+    if (!state.dob) { toast(t('no_dob')); return; }
+    const node = $('#results');
+    const canvas = await html2canvas(node, {
+      backgroundColor: getComputedStyle(document.body).getPropertyValue('--bg').trim(),
+      scale: 2,
+      useCORS: true
+    });
     const link = document.createElement('a');
-    link.download = 'age-calculation-result.png';
-    link.href = canvas.toDataURL();
+    link.download = `almanac-${(state.name || 'subject').toString().replace(/\s+/g,'-').toLowerCase()}.png`;
+    link.href = canvas.toDataURL('image/png');
     link.click();
-  });
-};
+  }
 
-// Play sound effect
-function playSound(type) {
-  // Create audio context if available
-  if (typeof AudioContext !== 'undefined' || typeof webkitAudioContext !== 'undefined') {
-    const audioCtx = new (AudioContext || webkitAudioContext)();
-    
-    if (type === 'celebration') {
-      // Create a simple celebration sound
-      const oscillator = audioCtx.createOscillator();
-      const gainNode = audioCtx.createGain();
-      
-      oscillator.connect(gainNode);
-      gainNode.connect(audioCtx.destination);
-      
-      oscillator.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
-      oscillator.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1); // E5
-      oscillator.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2); // G5
-      
-      gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
-      
-      oscillator.start(audioCtx.currentTime);
-      oscillator.stop(audioCtx.currentTime + 0.5);
+  // ---------- SHARE ----------
+  function shareTwitter() {
+    if (!state.dob) { toast(t('no_dob')); return; }
+    const a = ageDetails(state.dob);
+    const text = `My age in numbers: ${a.y}y ${a.m}m ${a.d}d · ${fmt(a.totalDays)} days. Typeset by The Age Almanac.`;
+    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(location.href)}`, '_blank');
+  }
+  function shareWA() {
+    if (!state.dob) { toast(t('no_dob')); return; }
+    const a = ageDetails(state.dob);
+    const text = `Almanac: ${a.y} thn ${a.m} bln ${a.d} hari · ${fmt(a.totalDays)} hari total. ${location.href}`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+  }
+  function copyLink() {
+    const url = state.dob
+      ? `${location.origin}${location.pathname}?dob=${state.dob.toISOString().slice(0,10)}&name=${encodeURIComponent(state.name)}`
+      : location.href;
+    navigator.clipboard.writeText(url).then(() => toast(t('link_copied')));
+  }
+
+  // ---------- BIRTHDAY CELEBRATION ----------
+  function celebrate() {
+    confetti();
+    const ov = $('#bdayOverlay');
+    ov.hidden = false;
+    $('#bdayClose').onclick = () => { ov.hidden = true; };
+  }
+  function confetti() {
+    const wrap = document.createElement('div');
+    wrap.className = 'confetti';
+    document.body.appendChild(wrap);
+    for (let i = 0; i < 80; i++) {
+      const s = document.createElement('span');
+      s.style.left = Math.random() * 100 + 'vw';
+      s.style.animationDuration = (2 + Math.random() * 2.5) + 's';
+      s.style.animationDelay = (Math.random() * 1.5) + 's';
+      s.style.width = (4 + Math.random() * 6) + 'px';
+      s.style.height = (10 + Math.random() * 8) + 'px';
+      wrap.appendChild(s);
     }
+    setTimeout(() => wrap.remove(), 5500);
   }
-}
 
-// Enhanced getZodiacInfo function
-function getZodiacInfo(sign) {
-  const zodiacData = {
-    'Aries': { symbol: '♈', dates: '21 Mar - 19 Apr', element: 'Api', planet: 'Mars', traits: 'Berani, Enerjik' },
-    'Taurus': { symbol: '♉', dates: '20 Apr - 20 Mei', element: 'Tanah', planet: 'Venus', traits: 'Stabil, Praktis' },
-    'Gemini': { symbol: '♊', dates: '21 Mei - 20 Jun', element: 'Udara', planet: 'Merkurius', traits: 'Komunikatif, Adaptif' },
-    'Cancer': { symbol: '♋', dates: '21 Jun - 22 Jul', element: 'Air', planet: 'Bulan', traits: 'Sensitif, Protektif' },
-    'Leo': { symbol: '♌', dates: '23 Jul - 22 Agu', element: 'Api', planet: 'Matahari', traits: 'Percaya Diri, Kreatif' },
-    'Virgo': { symbol: '♍', dates: '23 Agu - 22 Sep', element: 'Tanah', planet: 'Merkurius', traits: 'Analitis, Perfeksionis' },
-    'Libra': { symbol: '♎', dates: '23 Sep - 22 Okt', element: 'Udara', planet: 'Venus', traits: 'Seimbang, Diplomatik' },
-    'Scorpio': { symbol: '♏', dates: '23 Okt - 21 Nov', element: 'Air', planet: 'Mars/Pluto', traits: 'Intens, Misterius' },
-    'Sagittarius': { symbol: '♐', dates: '22 Nov - 21 Des', element: 'Api', planet: 'Jupiter', traits: 'Petualang, Optimis' },
-    'Capricorn': { symbol: '♑', dates: '22 Des - 19 Jan', element: 'Tanah', planet: 'Saturnus', traits: 'Ambisius, Disiplin' },
-    'Aquarius': { symbol: '♒', dates: '20 Jan - 18 Feb', element: 'Udara', planet: 'Saturnus/Uranus', traits: 'Inovatif, Independen' },
-    'Pisces': { symbol: '♓', dates: '19 Feb - 20 Mar', element: 'Air', planet: 'Jupiter/Neptunes', traits: 'Intuitif, Kreatif' }
-  };
-  
-  return zodiacData[sign] || { symbol: '⭐', dates: '', element: '', planet: '', traits: '' };
-}
-
-// Load timeline content
-function loadTimelineContent() {
-  const container = document.getElementById('lifeTimeline');
-  if (!container) return;
-  
-  // Sample timeline content
-  container.innerHTML = `
-    <div class="timeline-item">
-      <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg ml-6">
-        <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-2">Masa Kanak-kanak</h3>
-        <p class="text-gray-600 dark:text-gray-300">0-12 tahun: Periode pembelajaran dan eksplorasi dunia</p>
-      </div>
-    </div>
-    <div class="timeline-item">
-      <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg ml-6">
-        <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-2">Masa Remaja</h3>
-        <p class="text-gray-600 dark:text-gray-300">13-18 tahun: Pembentukan identitas dan pertumbuhan fisik</p>
-      </div>
-    </div>
-    <div class="timeline-item">
-      <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg ml-6">
-        <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-2">Dewasa Muda</h3>
-        <p class="text-gray-600 dark:text-gray-300">19-30 tahun: Karir, pendidikan tinggi, dan kemandirian</p>
-      </div>
-    </div>
-    <div class="timeline-item">
-      <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg ml-6">
-        <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-2">Dewasa</h3>
-        <p class="text-gray-600 dark:text-gray-300">31-50 tahun: Puncak karir dan tanggung jawab keluarga</p>
-      </div>
-    </div>
-  `;
-}
-
-// Load comparison content
-function loadComparisonContent() {
-  const container = document.getElementById('ageComparison');
-  if (!container) return;
-  
-  const celebrities = [
-    { name: "Albert Einstein", age: "76 tahun", field: "Fisikawan", image: "🧠" },
-    { name: "Leonardo da Vinci", age: "67 tahun", field: "Seniman & Penemu", image: "🎨" },
-    { name: "Marie Curie", age: "66 tahun", field: "Ilmuwan", image: "⚗️" },
-    { name: "Mozart", age: "35 tahun", field: "Komponis", image: "🎵" },
-    { name: "Steve Jobs", age: "56 tahun", field: "Entrepreneur", image: "💻" },
-    { name: "Nelson Mandela", age: "95 tahun", field: "Pemimpin", image: "✊" }
-  ];
-  
-  container.innerHTML = celebrities.map(celeb => `
-    <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg hover:scale-105 transition-all duration-300">
-      <div class="text-4xl text-center mb-3">${celeb.image}</div>
-      <h3 class="text-lg font-bold text-gray-800 dark:text-white text-center mb-2">${celeb.name}</h3>
-      <p class="text-gray-600 dark:text-gray-300 text-center text-sm mb-2">${celeb.field}</p>
-      <p class="text-purple-600 dark:text-purple-400 text-center font-bold">${celeb.age}</p>
-    </div>
-  `).join('');
-}
-
-// Load stats content
-function loadStatsContent() {
-  const container = document.getElementById('detailedStats');
-  if (!container) return;
-  
-  container.innerHTML = `
-    <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
-      <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-4">Statistik Kehidupan</h3>
-      <div class="space-y-3">
-        <div class="flex justify-between">
-          <span>📚 Estimasi kata yang dibaca</span>
-          <span class="font-bold">50 juta</span>
-        </div>
-        <div class="flex justify-between">
-          <span>👥 Orang yang ditemui</span>
-          <span class="font-bold">10,000</span>
-        </div>
-        <div class="flex justify-between">
-          <span>🚶 Langkah kaki</span>
-          <span class="font-bold">150 juta</span>
-        </div>
-        <div class="flex justify-between">
-          <span>😊 Hari bahagia</span>
-          <span class="font-bold">70%</span>
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-// Calculate detailed age information
-function calculateAgeDetails(birthDate) {
-  const now = new Date();
-  const birth = new Date(birthDate);
-  
-  let years = now.getFullYear() - birth.getFullYear();
-  let months = now.getMonth() - birth.getMonth();
-  let days = now.getDate() - birth.getDate();
-  
-  // Adjust for negative days
-  if (days < 0) {
-    months--;
-    const lastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
-    days += lastMonth.getDate();
+  // ---------- TABS ----------
+  function activateTab(name) {
+    $$('.tab').forEach(t => t.classList.toggle('is-active', t.dataset.tab === name));
+    $$('.panel').forEach(p => p.classList.toggle('is-active', p.dataset.panel === name));
   }
-  
-  // Adjust for negative months
-  if (months < 0) {
-    years--;
-    months += 12;
-  }
-  
-  // Calculate total time units
-  const totalMilliseconds = now - birth;
-  const totalDays = Math.floor(totalMilliseconds / (1000 * 60 * 60 * 24));
-  const totalHours = Math.floor(totalMilliseconds / (1000 * 60 * 60));
-  const totalMinutes = Math.floor(totalMilliseconds / (1000 * 60));
-  const totalSeconds = Math.floor(totalMilliseconds / 1000);
-  
-  return {
-    years,
-    months,
-    days,
-    totalDays,
-    totalHours,
-    totalMinutes,
-    totalSeconds,
-    totalMilliseconds
-  };
-}
 
-// Get zodiac sign based on birth month and day
-function getZodiac(month, day) {
-  const zodiacSigns = [
-    { sign: 'Capricorn', start: { month: 12, day: 22 }, end: { month: 1, day: 19 } },
-    { sign: 'Aquarius', start: { month: 1, day: 20 }, end: { month: 2, day: 18 } },
-    { sign: 'Pisces', start: { month: 2, day: 19 }, end: { month: 3, day: 20 } },
-    { sign: 'Aries', start: { month: 3, day: 21 }, end: { month: 4, day: 19 } },
-    { sign: 'Taurus', start: { month: 4, day: 20 }, end: { month: 5, day: 20 } },
-    { sign: 'Gemini', start: { month: 5, day: 21 }, end: { month: 6, day: 20 } },
-    { sign: 'Cancer', start: { month: 6, day: 21 }, end: { month: 7, day: 22 } },
-    { sign: 'Leo', start: { month: 7, day: 23 }, end: { month: 8, day: 22 } },
-    { sign: 'Virgo', start: { month: 8, day: 23 }, end: { month: 9, day: 22 } },
-    { sign: 'Libra', start: { month: 9, day: 23 }, end: { month: 10, day: 22 } },
-    { sign: 'Scorpio', start: { month: 10, day: 23 }, end: { month: 11, day: 21 } },
-    { sign: 'Sagittarius', start: { month: 11, day: 22 }, end: { month: 12, day: 21 } }
-  ];
-  
-  for (const zodiac of zodiacSigns) {
-    if (zodiac.start.month === zodiac.end.month) {
-      // Same month range
-      if (month === zodiac.start.month && day >= zodiac.start.day && day <= zodiac.end.day) {
-        return zodiac.sign;
-      }
-    } else {
-      // Cross month range
-      if ((month === zodiac.start.month && day >= zodiac.start.day) ||
-          (month === zodiac.end.month && day <= zodiac.end.day)) {
-        return zodiac.sign;
-      }
-    }
+  // ---------- THEME ----------
+  function toggleTheme() {
+    const cur = document.documentElement.dataset.theme;
+    const next = cur === 'paper' ? 'ink' : 'paper';
+    document.documentElement.dataset.theme = next;
+    localStorage.setItem('almanac.theme', next);
+    if (state.dob) renderAlloc(ageDetails(state.dob).y);
   }
-  
-  return 'Unknown';
-}
 
-// Apply theme
-function applyTheme(themeName) {
-  // Remove existing theme classes
-  document.documentElement.classList.remove('theme-ocean', 'theme-forest', 'theme-sunset', 'theme-lavender', 'theme-neon');
-  
-  // Apply new theme
-  if (themeName !== 'default') {
-    document.documentElement.classList.add(`theme-${themeName}`);
-  }
-  
-  document.documentElement.setAttribute('data-theme', themeName);
-  localStorage.setItem('selectedTheme', themeName);
-  
-  // Update particle colors based on theme
-  updateParticleColors();
-  
-  // Update CSS custom properties based on theme
-  const root = document.documentElement;
-  const themeColors = {
-    default: { primary: '#8b5cf6', secondary: '#ec4899', accent: '#3b82f6' },
-    ocean: { primary: '#0ea5e9', secondary: '#06b6d4', accent: '#0891b2' },
-    forest: { primary: '#10b981', secondary: '#059669', accent: '#047857' },
-    sunset: { primary: '#f59e0b', secondary: '#d97706', accent: '#b45309' },
-    lavender: { primary: '#8b5cf6', secondary: '#7c3aed', accent: '#6d28d9' },
-    neon: { primary: '#06ffa5', secondary: '#00d4ff', accent: '#ff006e' }
-  };
-  
-  const colors = themeColors[themeName] || themeColors.default;
-  root.style.setProperty('--primary-color', colors.primary);
-  root.style.setProperty('--secondary-color', colors.secondary);
-  root.style.setProperty('--accent-color', colors.accent);
-  
-  // Force re-render of gradients and colors
-  const gradientElements = document.querySelectorAll('.bg-gradient-to-r, .bg-gradient-to-br, .bg-gradient-to-l');
-  gradientElements.forEach(element => {
-    element.style.animation = 'none';
-    element.offsetHeight; // Trigger reflow
-    element.style.animation = null;
-  });
-  
-  // Update button gradients specifically
-  const buttons = document.querySelectorAll('button.bg-gradient-to-r');
-  buttons.forEach(button => {
-    if (button.classList.contains('from-purple-500')) {
-      button.style.background = `linear-gradient(to right, ${colors.primary}, ${colors.secondary})`;
-    }
-  });
-  
-  // Update text gradients
-  const textGradients = document.querySelectorAll('.bg-clip-text');
-  textGradients.forEach(element => {
-    if (element.classList.contains('from-purple-600')) {
-      element.style.background = `linear-gradient(to right, ${colors.primary}, ${colors.secondary}, ${colors.accent})`;
-      element.style.webkitBackgroundClip = 'text';
-      element.style.backgroundClip = 'text';
-    }
-  });
-  
-  console.log(`Theme applied: ${themeName}`, colors);
-}
+  // ---------- INIT ----------
+  document.addEventListener('DOMContentLoaded', () => {
+    // theme load
+    const savedTheme = localStorage.getItem('almanac.theme') || 'ink';
+    document.documentElement.dataset.theme = savedTheme;
 
-// Change language
-function changeLanguage(lang) {
-  localStorage.setItem('preferredLanguage', lang);
-  
-  // Use the setLanguage function from localization.js if available
-  if (typeof setLanguage === 'function') {
-    setLanguage(lang);
-  } else {
-    // Fallback implementation
-    const elements = document.querySelectorAll('[data-lang]');
-    elements.forEach(element => {
-      const key = element.getAttribute('data-lang');
-      // Check if translations is available from localization.js
-      if (typeof translations !== 'undefined' && translations[lang] && translations[lang][key]) {
-        element.textContent = translations[lang][key];
+    // edition number (random-ish stable)
+    const edition = String((Date.now() % 999) + 1).padStart(3, '0');
+    $('#editionNum').textContent = edition;
+    $('#footerEdition').textContent = `${edition} / ∞`;
+
+    updateTopbarDate();
+    setInterval(updateTopbarDate, 60000);
+
+    // tabs
+    $$('.tab').forEach(t => t.addEventListener('click', () => activateTab(t.dataset.tab)));
+
+    // theme toggle
+    $('[data-theme-toggle]').addEventListener('click', toggleTheme);
+
+    // calc
+    $('#calcBtn').addEventListener('click', () => {
+      const dob = $('#dob').value;
+      const name = $('#profileName').value.trim();
+      if (!dob) { toast(t('no_dob')); return; }
+      renderAlmanac(dob, name);
+    });
+    $('#dob').addEventListener('change', () => {
+      if ($('#dob').value) renderAlmanac($('#dob').value, $('#profileName').value.trim());
+    });
+    $('#profileName').addEventListener('input', () => {
+      if (state.dob) {
+        state.name = $('#profileName').value.trim();
+        $('#subjectName').textContent = state.name || t('no_subject');
+        window.__lastName = state.name;
       }
     });
-  }
-}
 
-// Enhanced daily horoscope function
-async function getDailyHoroscope() {
-  // Since the original API might not be available, we'll use sample data
-  const sampleHoroscopes = {
-    aries: "Hari ini adalah waktu yang tepat untuk memulai proyek baru. Energi Anda sangat tinggi dan kreativitas mengalir dengan lancar.",
-    taurus: "Fokus pada stabilitas finansial hari ini. Kesabaran Anda akan membuahkan hasil yang memuaskan.",
-    gemini: "Komunikasi adalah kunci sukses Anda hari ini. Jaringan sosial akan membawa peluang baru.",
-    cancer: "Intuisi Anda sangat kuat hari ini. Percayai insting dan jangan ragu untuk mengambil keputusan penting.",
-    leo: "Hari yang cerah untuk menunjukkan bakat dan kemampuan Anda. Percaya diri adalah aset terbesar.",
-    virgo: "Perhatikan detail dalam setiap pekerjaan. Perfeksionisme Anda akan dihargai hari ini.",
-    libra: "Harmoni dalam hubungan menjadi fokus utama. Diplomasi Anda akan menyelesaikan konflik.",
-    scorpio: "Transformasi besar sedang menanti. Bersiaplah untuk perubahan yang membawa kemajuan.",
-    sagittarius: "Petualangan baru memanggil. Jangan takut untuk keluar dari zona nyaman Anda.",
-    capricorn: "Kerja keras Anda mulai membuahkan hasil. Tetap fokus pada tujuan jangka panjang.",
-    aquarius: "Inovasi dan ide-ide unik akan membawa Anda pada kesuksesan. Berpikir di luar kotak.",
-    pisces: "Kreativitas dan intuisi berpadu sempurna hari ini. Waktunya untuk berkarya."
-  };
-  
-  return {
-    date: new Date().toLocaleDateString('id-ID', { 
-      weekday: 'long', 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
-    }),
-    ...sampleHoroscopes
-  };
-}
+    // save
+    $('#saveBtn').addEventListener('click', saveCurrent);
 
-// Find birth date based on age
-function findBirthDate(yearsInput, monthsInput, daysInput, ageInput) {
-  const resultEl = document.getElementById('birthResult');
-  
-  let years = yearsInput;
-  let months = monthsInput;
-  let days = daysInput;
-  
-  // Parse text input if provided
-  if (ageInput) {
-    const matches = ageInput.match(/(\d+)\s*tahun\s*(\d+)\s*bulan\s*(\d+)\s*hari/i);
-    if (matches) {
-      years = parseInt(matches[1]);
-      months = parseInt(matches[2]);
-      days = parseInt(matches[3]);
+    // reverse
+    $('#reverseBtn').addEventListener('click', reverseDate);
+    $('#cmpBtn').addEventListener('click', runCompare);
+
+    // archive
+    $('#clearArchive').addEventListener('click', clearArchive);
+    $('#archiveList').addEventListener('click', e => {
+      const btn = e.target.closest('button[data-act]');
+      if (!btn) return;
+      const id = parseInt(btn.dataset.id);
+      const list = loadArchive();
+      const idx = list.findIndex(x => x.id === id);
+      if (idx === -1) return;
+      if (btn.dataset.act === 'del') {
+        list.splice(idx, 1);
+        saveArchive(list);
+        renderArchive();
+        toast(t('deleted_one'));
+      } else if (btn.dataset.act === 'open') {
+        const e = list[idx];
+        $('#dob').value = e.dob;
+        $('#profileName').value = e.name === t('no_subject') ? '' : e.name;
+        activateTab('chrono');
+        renderAlmanac(e.dob, e.name === t('no_subject') ? '' : e.name);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    });
+
+    // exports & shares
+    $('#exportPDF').addEventListener('click', exportPDF);
+    $('#exportImg').addEventListener('click', exportImage);
+    $('#shareTwitter').addEventListener('click', shareTwitter);
+    $('#shareWA').addEventListener('click', shareWA);
+    $('#copyLink').addEventListener('click', copyLink);
+
+    renderArchive();
+
+    // ---------- SETTINGS DRAWER ----------
+    function openDrawer()  { $('#drawer').hidden = false; document.body.style.overflow = 'hidden'; }
+    function closeDrawer() { $('#drawer').hidden = true;  document.body.style.overflow = ''; }
+    function openShortcuts()  { $('#shortcuts').hidden = false; }
+    function closeShortcuts() { $('#shortcuts').hidden = true; }
+
+    $('#settingsBtn').addEventListener('click', openDrawer);
+    $('#helpBtn').addEventListener('click', openShortcuts);
+    $$('[data-drawer-close]').forEach(el => el.addEventListener('click', closeDrawer));
+    $$('[data-shortcuts-close]').forEach(el => el.addEventListener('click', closeShortcuts));
+
+    // life expectancy slider
+    const lifeRange = $('#lifeExpect');
+    const lifeVal   = $('#lifeExpectVal');
+    lifeRange.value = SETTINGS.lifeExpectancy;
+    lifeVal.textContent = SETTINGS.lifeExpectancy;
+    function updateRangeBg(el) {
+      const min = +el.min, max = +el.max;
+      el.style.setProperty('--p', `${((+el.value - min) / (max - min)) * 100}%`);
     }
-  }
-  
-  if (years === 0 && months === 0 && days === 0) {
-    resultEl.innerHTML = '<p class="text-red-500">Silakan masukkan umur yang valid!</p>';
-    return;
-  }
-  
-  const now = new Date();
-  const birthDate = new Date(now);
-  
-  birthDate.setFullYear(now.getFullYear() - years);
-  birthDate.setMonth(now.getMonth() - months);
-  birthDate.setDate(now.getDate() - days);
-  
-  const options = { 
-    weekday: 'long', 
-    year: 'numeric', 
-    month: 'long', 
-    day: 'numeric' 
-  };
-  
-  resultEl.innerHTML = `
-    <div class="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-6 rounded-xl">
-      <h3 class="text-xl font-bold mb-2">Perkiraan Tanggal Lahir</h3>
-      <p class="text-lg">${birthDate.toLocaleDateString('id-ID', options)}</p>
-      <p class="text-sm mt-2 opacity-90">Zodiak: ${getZodiac(birthDate.getMonth() + 1, birthDate.getDate())}</p>
-    </div>
-  `;
-  
-  // Show result with animation
-  gsap.fromTo(resultEl, 
-    { opacity: 0, scale: 0.9 },
-    { opacity: 1, scale: 1, duration: 0.5, ease: "power2.out" }
-  );
-}
+    updateRangeBg(lifeRange);
+    lifeRange.addEventListener('input', () => {
+      SETTINGS.lifeExpectancy = +lifeRange.value;
+      lifeVal.textContent = lifeRange.value;
+      updateRangeBg(lifeRange);
+      saveSettings();
+      if (state.dob) {
+        const a = ageDetails(state.dob);
+        renderBattery(a.y + a.m / 12);
+        renderWeeks(state.dob);
+      }
+    });
 
-// Enhanced history functions
-function saveToHistory(birthDate, ageDetails) {
-  let history = JSON.parse(localStorage.getItem('ageHistory') || '[]');
-  
-  const historyItem = {
-    id: Date.now(),
-    birthDate: birthDate.toISOString(),
-    age: `${ageDetails.years} tahun ${ageDetails.months} bulan ${ageDetails.days} hari`,
-    calculatedAt: new Date().toISOString(),
-    zodiac: getZodiac(birthDate.getMonth() + 1, birthDate.getDate())
-  };
-  
-  // Add to beginning of array and limit to 10 items
-  history.unshift(historyItem);
-  history = history.slice(0, 10);
-  
-  localStorage.setItem('ageHistory', JSON.stringify(history));
-  updateHistoryDisplay();
-}
+    // work hours pills
+    $$('.seg-pill[data-work]').forEach(p => {
+      p.classList.toggle('is-active', +p.dataset.work === SETTINGS.workHours);
+      p.addEventListener('click', () => {
+        $$('.seg-pill[data-work]').forEach(x => x.classList.remove('is-active'));
+        p.classList.add('is-active');
+        SETTINGS.workHours = +p.dataset.work;
+        saveSettings();
+        if (state.dob) renderAlloc(ageDetails(state.dob).y);
+      });
+    });
 
-function updateHistoryDisplay() {
-  const container = document.getElementById('calculationHistory');
-  const history = JSON.parse(localStorage.getItem('ageHistory') || '[]');
-  
-  if (history.length === 0) {
-    container.innerHTML = `
-      <div class="col-span-full text-center py-8 text-gray-500 dark:text-gray-400">
-        <i class="fas fa-history text-4xl mb-4 opacity-50"></i>
-        <p>Belum ada riwayat perhitungan</p>
-      </div>
-    `;
-    return;
-  }
-  
-  container.innerHTML = history.map(item => {
-    const birthDate = new Date(item.birthDate);
-    const calculatedDate = new Date(item.calculatedAt);
-    
-    return `
-      <div class="history-item group">
-        <div class="flex items-center justify-between mb-3">
-          <h4 class="font-bold text-gray-800 dark:text-white">${item.age}</h4>
-          <button onclick="deleteHistoryItem(${item.id})" 
-                  class="delete-button text-red-500 hover:text-red-600 p-2 rounded-lg transition-all duration-300">
-            <i class="fas fa-trash-alt"></i>
-          </button>
-        </div>
-        <div class="space-y-2 text-sm text-gray-600 dark:text-gray-300">
-          <div class="flex items-center">
-            <i class="fas fa-calendar mr-2 text-blue-500"></i>
-            <span>Lahir: ${birthDate.toLocaleDateString('id-ID')}</span>
-          </div>
-          <div class="flex items-center">
-            <i class="fas fa-star mr-2 text-yellow-500"></i>
-            <span>Zodiak: ${item.zodiac}</span>
-          </div>
-          <div class="flex items-center">
-            <i class="fas fa-clock mr-2 text-green-500"></i>
-            <span>Dihitung: ${calculatedDate.toLocaleDateString('id-ID')}</span>
-          </div>
-        </div>
-      </div>
-    `;
-  }).join('');
-}
+    // motion pills
+    $$('.seg-pill[data-motion]').forEach(p => {
+      p.classList.toggle('is-active', p.dataset.motion === SETTINGS.motion);
+      p.addEventListener('click', () => {
+        $$('.seg-pill[data-motion]').forEach(x => x.classList.remove('is-active'));
+        p.classList.add('is-active');
+        SETTINGS.motion = p.dataset.motion;
+        saveSettings();
+        document.documentElement.dataset.motion = SETTINGS.motion;
+      });
+    });
+    document.documentElement.dataset.motion = SETTINGS.motion;
 
-function deleteHistoryItem(id) {
-  let history = JSON.parse(localStorage.getItem('ageHistory') || '[]');
-  history = history.filter(item => item.id !== id);
-  localStorage.setItem('ageHistory', JSON.stringify(history));
-  updateHistoryDisplay();
-}
+    // reset all
+    $('#resetAllBtn').addEventListener('click', () => {
+      if (!confirm(t('confirm_reset') || 'Reset all local data?')) return;
+      ['almanac.archive','almanac.life','almanac.work','almanac.motion','almanac.theme','almanac.lang']
+        .forEach(k => localStorage.removeItem(k));
+      toast(t('reset_done') || 'All cleared.');
+      setTimeout(() => location.reload(), 600);
+    });
 
-function clearAllHistory() {
-  if (confirm('Apakah Anda yakin ingin menghapus semua riwayat?')) {
-    localStorage.removeItem('ageHistory');
-    updateHistoryDisplay();
-  }
-}
+    // ---------- KEYBOARD SHORTCUTS ----------
+    document.addEventListener('keydown', e => {
+      const tag = (e.target.tagName || '').toLowerCase();
+      const inField = tag === 'input' || tag === 'textarea' || tag === 'select';
 
-// Share functions
-function shareToFacebook() {
-  const dobInput = document.getElementById('dob');
-  if (!dobInput.value) {
-    alert('Silakan hitung umur terlebih dahulu!');
-    return;
-  }
-  
-  const ageDetails = calculateAgeDetails(new Date(dobInput.value));
-  const text = `Umur saya adalah ${ageDetails.years} tahun ${ageDetails.months} bulan ${ageDetails.days} hari! Hitung umur Anda di Kalkulator Umur Interaktif.`;
-  const url = window.location.href;
-  
-  window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(text)}`, '_blank');
-}
+      // Esc closes overlays
+      if (e.key === 'Escape') {
+        if (!$('#drawer').hidden) { closeDrawer(); return; }
+        if (!$('#shortcuts').hidden) { closeShortcuts(); return; }
+        if (!$('#bdayOverlay').hidden) { $('#bdayOverlay').hidden = true; return; }
+      }
 
-function shareToTwitter() {
-  const dobInput = document.getElementById('dob');
-  if (!dobInput.value) {
-    alert('Silakan hitung umur terlebih dahulu!');
-    return;
-  }
-  
-  const ageDetails = calculateAgeDetails(new Date(dobInput.value));
-  const text = `Umur saya adalah ${ageDetails.years} tahun ${ageDetails.months} bulan ${ageDetails.days} hari! 🎂 #AgeCalculator`;
-  const url = window.location.href;
-  
-  window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
-}
+      if (inField) {
+        // Enter from dob input → calculate
+        if (e.key === 'Enter' && (e.target.id === 'dob' || e.target.id === 'profileName')) {
+          $('#calcBtn').click();
+        }
+        return;
+      }
 
-function shareToWhatsApp() {
-  const dobInput = document.getElementById('dob');
-  if (!dobInput.value) {
-    alert('Silakan hitung umur terlebih dahulu!');
-    return;
-  }
-  
-  const ageDetails = calculateAgeDetails(new Date(dobInput.value));
-  const text = `Umur saya adalah ${ageDetails.years} tahun ${ageDetails.months} bulan ${ageDetails.days} hari! 🎂\nHitung umur Anda di: ${window.location.href}`;
-  
-  window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
-}
+      if (e.key === '?') { openShortcuts(); e.preventDefault(); return; }
+      if (e.key === '/') { e.preventDefault(); $('#dob').focus(); return; }
+      if (e.key.toLowerCase() === 't') { toggleTheme(); return; }
+      if (e.key.toLowerCase() === 'l') {
+        applyI18n(CURRENT_LANG === 'id' ? 'en' : 'id');
+        return;
+      }
+      if (e.key.toLowerCase() === 's') { $('#saveBtn').click(); return; }
+      const tabsMap = ['chrono','reverse','timeline','cosmos','weeks','compare','archive'];
+      if (/^[1-7]$/.test(e.key)) {
+        activateTab(tabsMap[+e.key - 1]);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+    });
 
-// Export to PDF
-function exportToPDF() {
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-  
-  const dobInput = document.getElementById('dob');
-  if (!dobInput.value) {
-    alert('Silakan hitung umur terlebih dahulu!');
-    return;
-  }
-  
-  const ageDetails = calculateAgeDetails(new Date(dobInput.value));
-  const birthDate = new Date(dobInput.value);
-  const zodiac = getZodiac(birthDate.getMonth() + 1, birthDate.getDate());
-  
-  // Add content to PDF
-  doc.setFontSize(20);
-  doc.text('Hasil Perhitungan Umur', 20, 30);
-  
-  doc.setFontSize(12);
-  doc.text(`Tanggal Lahir: ${birthDate.toLocaleDateString('id-ID')}`, 20, 50);
-  doc.text(`Umur: ${ageDetails.years} tahun ${ageDetails.months} bulan ${ageDetails.days} hari`, 20, 70);
-  doc.text(`Total Hari: ${ageDetails.totalDays.toLocaleString()}`, 20, 90);
-  doc.text(`Total Jam: ${ageDetails.totalHours.toLocaleString()}`, 20, 110);
-  doc.text(`Zodiak: ${zodiac}`, 20, 130);
-  doc.text(`Dihitung pada: ${new Date().toLocaleDateString('id-ID')}`, 20, 150);
-  
-  doc.save('age-calculation-result.pdf');
-}
+    // hydrate from URL
+    const params = new URLSearchParams(location.search);
+    const urlDob = params.get('dob');
+    const urlName = params.get('name');
+    if (urlDob) {
+      $('#dob').value = urlDob;
+      if (urlName) $('#profileName').value = urlName;
+      renderAlmanac(urlDob, urlName || '');
+    }
+  });
 
-// Display daily horoscope
-function displayDailyHoroscope(zodiacSign, horoscopeData) {
-  const container = document.getElementById('dailyHoroscope');
-  if (!container) return;
-  
-  const zodiacKey = zodiacSign.toLowerCase();
-  const horoscope = horoscopeData[zodiacKey] || "Horoskop tidak tersedia untuk zodiak ini.";
-  
-  container.innerHTML = `
-    <div class="bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-2xl shadow-xl p-8">
-      <h3 class="text-2xl font-bold text-gray-800 dark:text-white mb-6">
-        <i class="fas fa-crystal-ball text-purple-500 mr-3"></i> Horoskop Harian - ${zodiacSign}
-      </h3>
-      <div class="bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 p-6 rounded-xl">
-        <p class="text-gray-700 dark:text-gray-200 text-lg leading-relaxed">${horoscope}</p>
-        <div class="mt-4 text-sm text-gray-600 dark:text-gray-400">
-          <i class="fas fa-calendar-day mr-2"></i> ${horoscopeData.date}
-        </div>
-      </div>
-    </div>
-  `;
-}
+})();

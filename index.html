@@ -1,596 +1,708 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" data-theme="ink">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Kalkulator umur lengkap dengan fitur interaktif, visualisasi data, perbandingan, dan timeline kehidupan" />
-  <meta name="keywords" content="kalkulator umur, age calculator, hitung umur, tanggal lahir, zodiak, timeline, statistik" />
-  <title>🎂 Kalkulator Umur Interaktif - Timeline Kehidupan Anda</title>
-  <!-- Favicon -->
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎂</text></svg>">
-  
-  <!-- TailwindCSS via CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- Chart.js untuk visualisasi -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  
-  <!-- Particles.js untuk efek partikel -->
-  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
-  
-  <!-- GSAP untuk animasi advanced -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-  
-  <!-- Lottie untuk animasi -->
-  <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
-  
-  <!-- Aktifkan Dark Mode & Custom Config -->
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            primary: {
-              50: '#eff6ff',
-              100: '#dbeafe',
-              200: '#bfdbfe',
-              300: '#93c5fd',
-              400: '#60a5fa',
-              500: '#3b82f6',
-              600: '#2563eb',
-              700: '#1d4ed8',
-              800: '#1e40af',
-              900: '#1e3a8a',
-            },
-            rainbow: {
-              red: '#ff6b6b',
-              orange: '#ffa726',
-              yellow: '#ffeb3b',
-              green: '#66bb6a',
-              blue: '#42a5f5',
-              indigo: '#5c6bc0',
-              purple: '#ab47bc',
-            }
-          },
-          animation: {
-            'bounce-slow': 'bounce 3s infinite',
-            'pulse-slow': 'pulse 3s infinite',
-            'fade-in': 'fadeIn 0.5s ease-in',
-            'slide-up': 'slideUp 0.5s ease-out',
-            'slide-down': 'slideDown 0.5s ease-out',
-            'scale-in': 'scaleIn 0.3s ease-out',
-            'rotate-slow': 'rotate 8s linear infinite',
-            'float': 'float 3s ease-in-out infinite',
-            'glow': 'glow 2s ease-in-out infinite alternate',
-            'sparkle': 'sparkle 1.5s ease-in-out infinite',
-          },
-          keyframes: {
-            fadeIn: {
-              '0%': { opacity: '0' },
-              '100%': { opacity: '1' },
-            },
-            slideUp: {
-              '0%': { transform: 'translateY(30px)', opacity: '0' },
-              '100%': { transform: 'translateY(0)', opacity: '1' },
-            },
-            slideDown: {
-              '0%': { transform: 'translateY(-30px)', opacity: '0' },
-              '100%': { transform: 'translateY(0)', opacity: '1' },
-            },
-            scaleIn: {
-              '0%': { transform: 'scale(0.9)', opacity: '0' },
-              '100%': { transform: 'scale(1)', opacity: '1' },
-            },
-            float: {
-              '0%, 100%': { transform: 'translateY(0px)' },
-              '50%': { transform: 'translateY(-10px)' },
-            },
-            glow: {
-              '0%': { boxShadow: '0 0 5px #3b82f6, 0 0 10px #3b82f6' },
-              '100%': { boxShadow: '0 0 10px #3b82f6, 0 0 20px #3b82f6, 0 0 30px #3b82f6' },
-            },
-            sparkle: {
-              '0%, 100%': { opacity: '1', transform: 'scale(1)' },
-              '50%': { opacity: '0.7', transform: 'scale(1.2)' },
-            },
-            rotate: {
-              '0%': { transform: 'rotate(0deg)' },
-              '100%': { transform: 'rotate(360deg)' },
-            }
-          },
-          backgroundImage: {
-            'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-            'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
-            'aurora': 'linear-gradient(45deg, #ff6b6b, #ffa726, #ffeb3b, #66bb6a, #42a5f5, #5c6bc0, #ab47bc)',
-          }
-        }
-      }
-    }
-  </script>
-  
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  <!-- Custom CSS -->
-  <link rel="stylesheet" href="styles.css">
+  <meta name="description" content="The Age Almanac — kalkulator umur editorial dengan live chronometry, life battery, dan cosmic odometer." />
+  <meta name="keywords" content="kalkulator umur, age calculator, chronograph, almanac, zodiak, life timeline" />
+  <title>The Age Almanac · Chronometry of a Life</title>
+
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2245%22 fill=%22none%22 stroke=%22%23d4a24c%22 stroke-width=%224%22/><line x1=%2250%22 y1=%2250%22 x2=%2250%22 y2=%2218%22 stroke=%22%23d4a24c%22 stroke-width=%224%22 stroke-linecap=%22round%22/><line x1=%2250%22 y1=%2250%22 x2=%2272%22 y2=%2250%22 stroke=%22%23d4a24c%22 stroke-width=%223%22 stroke-linecap=%22round%22/></svg>">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=JetBrains+Mono:wght@300;400;500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <!-- jsPDF -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  
-  <!-- HTML2Canvas untuk download gambar -->
+  <!-- html2canvas -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-</head>
-<body class="bg-gradient-to-br from-purple-100 via-blue-50 to-cyan-100 dark:from-gray-900 dark:via-purple-900 dark:to-blue-900 min-h-screen overflow-x-hidden">
-  <!-- Particles background -->
-  <div id="particles-js" class="fixed inset-0 z-0"></div>
-  
-  <!-- Background shapes -->
-  <div class="fixed inset-0 z-0 overflow-hidden pointer-events-none">
-    <div class="absolute top-20 left-10 w-72 h-72 bg-pink-300 dark:bg-pink-600 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-xl opacity-30 animate-float"></div>
-    <div class="absolute top-40 right-10 w-72 h-72 bg-yellow-300 dark:bg-yellow-600 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-xl opacity-30 animate-float" style="animation-delay: 1s;"></div>
-    <div class="absolute -bottom-32 left-20 w-72 h-72 bg-blue-300 dark:bg-blue-600 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-xl opacity-30 animate-float" style="animation-delay: 2s;"></div>
-  </div>
 
-  <div class="container mx-auto p-4 max-w-7xl relative z-10">
-    <!-- Header -->
-    <header class="flex flex-col lg:flex-row items-center justify-between py-8 mb-6 animate-slide-down">
-      <div class="flex items-center mb-6 lg:mb-0">
-        <div class="relative">
-          <i class="fas fa-birthday-cake text-5xl text-pink-500 dark:text-pink-400 mr-4 animate-sparkle"></i>
-          <div class="absolute -top-2 -right-2 w-4 h-4 bg-yellow-400 rounded-full animate-bounce"></div>
-        </div>
-        <div>
-          <h1 class="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent" data-lang="title">
-            Kalkulator Umur Interaktif
-          </h1>
-          <p class="text-gray-600 dark:text-gray-300 mt-2 text-lg">Temukan timeline kehidupan Anda dengan visualisasi yang menarik</p>
-        </div>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Grain texture overlay -->
+  <div class="grain" aria-hidden="true"></div>
+
+  <!-- Vignette -->
+  <div class="vignette" aria-hidden="true"></div>
+
+  <main class="almanac">
+
+    <!-- ============= TOP BAR ============= -->
+    <div class="topbar">
+      <div class="topbar__left">
+        <span class="mono">EDITION № <span id="editionNum">001</span></span>
+        <span class="dot">·</span>
+        <span class="mono" id="todayLong">—</span>
       </div>
-      
-      <div class="flex items-center space-x-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-2xl p-4 shadow-xl">
-        <!-- Language Selector -->
-        <div class="relative">
-          <select id="languageSelector" class="bg-transparent text-gray-800 dark:text-white p-2 rounded-lg cursor-pointer border border-gray-300 dark:border-gray-600 shadow-sm focus:ring-2 focus:ring-purple-500">
-            <option value="id" selected>🇮🇩 Bahasa Indonesia</option>
-            <option value="en">🇺🇸 English</option>
-          </select>
-        </div>
-        
-        <!-- Theme Selector -->
-        <div class="relative">
-          <select id="themeSelector" class="bg-transparent text-gray-800 dark:text-white p-2 rounded-lg cursor-pointer border border-gray-300 dark:border-gray-600 shadow-sm focus:ring-2 focus:ring-purple-500">
-            <option value="default" selected>🎨 Default</option>
-            <option value="ocean">🌊 Ocean</option>
-            <option value="forest">🌲 Forest</option>
-            <option value="sunset">🌅 Sunset</option>
-            <option value="lavender">💜 Lavender</option>
-            <option value="neon">⚡ Neon</option>
-          </select>
-        </div>
-        
-        <!-- Dark Mode Toggle -->
-        <button id="darkModeToggle" class="p-3 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 shadow-lg transition duration-300 hover:scale-110 hover:shadow-xl">
-          <svg id="iconSun" class="w-6 h-6 text-white dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m8.66-10h-1M4.34 12h-1m15.02 4.66l-.7-.7M6.34 7.34l-.7-.7m12.02 12.02l-.7-.7M6.34 16.66l-.7-.7M12 8a4 4 0 100 8 4 4 0 000-8z"></path>
-          </svg>
-          <svg id="iconMoon" class="w-6 h-6 hidden dark:block text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
-          </svg>
+      <div class="topbar__right">
+        <button class="seg" data-lang="id" aria-pressed="true">ID</button>
+        <span class="seg__sep">/</span>
+        <button class="seg" data-lang="en" aria-pressed="false">EN</button>
+        <span class="seg__sep">·</span>
+        <button class="seg" id="helpBtn" aria-label="Keyboard shortcuts" title="Shortcuts (?)">
+          <span class="theme-ico">?</span>
+        </button>
+        <button class="seg" id="settingsBtn" aria-label="Settings" title="Settings">
+          <span class="theme-ico">⚙</span>
+        </button>
+        <button class="seg" data-theme-toggle aria-label="Toggle theme" title="Theme (T)">
+          <span class="theme-ico">◐</span>
         </button>
       </div>
+    </div>
+
+    <!-- ============= MASTHEAD ============= -->
+    <header class="masthead">
+      <div class="masthead__rule"></div>
+      <p class="masthead__kicker mono" data-i18n="kicker">A QUIET CHRONOMETRY OF YOUR LIFE</p>
+      <h1 class="masthead__title">
+        <span class="ttl-line">The&nbsp;<em>Age</em></span>
+        <span class="ttl-line">Almanac<span class="ttl-period">.</span></span>
+      </h1>
+      <p class="masthead__lede" data-i18n="lede">
+        Setiap detik adalah artefak. Masukkan tanggal lahirmu — kami susun
+        almanak pribadi: chronometry hidup, kalkulasi orbit, dan timeline
+        diam yang terus berdetak.
+      </p>
+      <div class="masthead__rule"></div>
     </header>
 
-    <!-- Main Navigation -->
-    <nav class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-2xl shadow-xl mb-8 overflow-hidden animate-slide-up">
-      <div class="flex flex-wrap">
-        <button id="tabAge" class="flex-1 py-4 px-6 font-medium text-purple-600 dark:text-purple-400 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/50 dark:to-pink-900/50 border-b-4 border-purple-500 tab-active transition-all duration-300" data-lang="tab_age">
-          <i class="fas fa-calculator mr-2"></i> Hitung Umur
-        </button>
-        <button id="tabBirth" class="flex-1 py-4 px-6 font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300" data-lang="tab_birth">
-          <i class="fas fa-calendar-day mr-2"></i> Cari Tanggal Lahir
-        </button>
-        <button id="tabTimeline" class="flex-1 py-4 px-6 font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300" data-lang="tab_timeline">
-          <i class="fas fa-timeline mr-2"></i> Timeline Kehidupan
-        </button>
-        <button id="tabComparison" class="flex-1 py-4 px-6 font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300" data-lang="tab_comparison">
-          <i class="fas fa-users mr-2"></i> Perbandingan
-        </button>
-        <button id="tabStats" class="flex-1 py-4 px-6 font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300" data-lang="tab_stats">
-          <i class="fas fa-chart-bar mr-2"></i> Statistik
-        </button>
-      </div>
+    <!-- ============= NAVIGATION ============= -->
+    <nav class="tabs" role="tablist">
+      <button class="tab is-active" data-tab="chrono" role="tab">
+        <span class="tab__num mono">01</span>
+        <span class="tab__lbl" data-i18n="tab_chrono">Chronograph</span>
+      </button>
+      <button class="tab" data-tab="reverse" role="tab">
+        <span class="tab__num mono">02</span>
+        <span class="tab__lbl" data-i18n="tab_reverse">Reverse Date</span>
+      </button>
+      <button class="tab" data-tab="timeline" role="tab">
+        <span class="tab__num mono">03</span>
+        <span class="tab__lbl" data-i18n="tab_timeline">Timeline</span>
+      </button>
+      <button class="tab" data-tab="cosmos" role="tab">
+        <span class="tab__num mono">04</span>
+        <span class="tab__lbl" data-i18n="tab_cosmos">Cosmos</span>
+      </button>
+      <button class="tab" data-tab="weeks" role="tab">
+        <span class="tab__num mono">05</span>
+        <span class="tab__lbl" data-i18n="tab_weeks">Life in Weeks</span>
+      </button>
+      <button class="tab" data-tab="compare" role="tab">
+        <span class="tab__num mono">06</span>
+        <span class="tab__lbl" data-i18n="tab_compare">Compare</span>
+      </button>
+      <button class="tab" data-tab="archive" role="tab">
+        <span class="tab__num mono">07</span>
+        <span class="tab__lbl" data-i18n="tab_archive">Archive</span>
+      </button>
     </nav>
 
-    <!-- Tab Content Container -->
-    <div class="tab-content">
-      <!-- Age Calculator Tab -->
-      <div id="ageCalculator" class="tab-panel active">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <!-- Input Section -->
-          <div class="bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-2xl shadow-2xl p-8 animate-scale-in">
-            <div class="text-center mb-8">
-              <lottie-player src="https://assets5.lottiefiles.com/packages/lf20_touohxv0.json" background="transparent" speed="1" style="width: 120px; height: 120px; margin: 0 auto;" loop autoplay></lottie-player>
-              <h2 class="text-2xl font-bold text-gray-800 dark:text-white mt-4" data-lang="birth_finder_title">Masukkan Tanggal Lahir Anda</h2>
-              <p class="text-gray-600 dark:text-gray-300" data-lang="birth_finder_subtitle">Temukan perjalanan hidup Anda yang menakjubkan</p>
-            </div>
+    <!-- ============= TAB · CHRONOGRAPH ============= -->
+    <section class="panel is-active" data-panel="chrono">
 
-            <div class="space-y-6">
-              <div class="relative">
-                <label for="dob" class="block text-lg font-medium text-gray-700 dark:text-gray-200 mb-3">
-                  <i class="fas fa-birthday-cake mr-2 text-pink-500"></i> Tanggal Lahir
-                </label>
-                <input 
-                  type="date" 
-                  id="dob" 
-                  class="w-full p-4 border-2 border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 dark:text-white shadow-sm focus:ring-4 focus:ring-purple-300 dark:focus:ring-purple-600 focus:border-purple-500 transition-all duration-300 text-lg" 
-                />
-                <div class="absolute inset-y-0 right-0 top-8 flex items-center pr-3 pointer-events-none">
-                  <i class="fas fa-calendar text-gray-400"></i>
-                </div>
-              </div>
-
-              <button id="calculateBtn" class="w-full bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 hover:from-purple-600 hover:via-pink-600 hover:to-blue-600 text-white py-4 px-6 rounded-xl shadow-lg transition duration-300 font-medium text-lg transform hover:scale-105 hover:shadow-xl animate-glow" data-lang="calculate_btn">
-                <i class="fas fa-magic mr-3"></i> ✨ Hitung Umur Saya ✨
-              </button>
-
-              <!-- Quick Calculate Presets -->
-              <div class="grid grid-cols-2 gap-3 mt-6">
-                <button onclick="setQuickDate('today')" class="p-3 bg-gradient-to-r from-green-400 to-blue-500 text-white rounded-lg hover:scale-105 transition duration-300">
-                  <i class="fas fa-calendar-day mr-2"></i> <span data-lang="quick_today">Hari Ini</span>
-                </button>
-                <button onclick="setQuickDate('yesterday')" class="p-3 bg-gradient-to-r from-yellow-400 to-orange-500 text-white rounded-lg hover:scale-105 transition duration-300">
-                  <i class="fas fa-calendar-minus mr-2"></i> <span data-lang="quick_yesterday">Kemarin</span>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Fun Facts Panel -->
-          <div class="bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-2xl shadow-2xl p-8 animate-scale-in" style="animation-delay: 0.2s;">
-            <h3 class="text-2xl font-bold text-gray-800 dark:text-white mb-6">
-              <i class="fas fa-lightbulb text-yellow-500 mr-3"></i> Fakta Menarik
-            </h3>
-            <div id="funFacts" class="space-y-4">
-              <div class="bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 p-4 rounded-xl">
-                <p class="text-gray-700 dark:text-gray-200">💫 Jantung manusia berdetak sekitar 2.5 miliar kali dalam hidupnya!</p>
-              </div>
-              <div class="bg-gradient-to-r from-green-100 to-blue-100 dark:from-green-900/30 dark:to-blue-900/30 p-4 rounded-xl">
-                <p class="text-gray-700 dark:text-gray-200">🌍 Bumi mengelilingi matahari dengan kecepatan 107,000 km/jam!</p>
-              </div>
-              <div class="bg-gradient-to-r from-pink-100 to-red-100 dark:from-pink-900/30 dark:to-red-900/30 p-4 rounded-xl">
-                <p class="text-gray-700 dark:text-gray-200">🧠 Otak manusia memiliki sekitar 86 miliar neuron!</p>
-              </div>
-            </div>
-          </div>
+      <!-- Input bar -->
+      <div class="inputbar">
+        <div class="inputbar__field">
+          <label for="dob" class="mono lbl" data-i18n="dob_label">DATE OF BIRTH</label>
+          <input type="date" id="dob" />
+          <div class="inputbar__hint mono" data-i18n="dob_hint">YYYY · MM · DD</div>
         </div>
 
-        <!-- Results Section -->
-        <div id="result" class="mt-8 hidden">
-          <!-- Main Age Display -->
-          <div class="bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 rounded-2xl p-8 text-center text-white mb-8 shadow-2xl animate-scale-in">
-            <div class="text-6xl font-bold mb-4" id="mainAge">25</div>
-            <div class="text-xl opacity-90" id="ageText">Tahun Penuh Pengalaman</div>
-            <div class="text-lg opacity-75 mt-2" id="detailedAge">9,125 hari | 219,000 jam | 13,140,000 menit</div>
-          </div>
-
-          <!-- Interactive Cards Grid -->
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            <!-- Age Details Card -->
-            <div class="bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-2xl shadow-xl p-6 hover:scale-105 transition-all duration-300">
-              <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-bold text-gray-800 dark:text-white">
-                  <i class="fas fa-clock text-blue-500 mr-2"></i> Detail Umur
-                </h3>
-                <div class="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
-              </div>
-              <div id="ageDetails" class="space-y-3"></div>
-            </div>
-
-            <!-- Zodiac Card -->
-            <div class="bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-2xl shadow-xl p-6 hover:scale-105 transition-all duration-300">
-              <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-bold text-gray-800 dark:text-white">
-                  <i class="fas fa-star text-yellow-500 mr-2"></i> Zodiak
-                </h3>
-                <div class="w-3 h-3 bg-yellow-500 rounded-full animate-pulse"></div>
-              </div>
-              <div id="zodiacInfo" class="text-center"></div>
-            </div>
-
-            <!-- Birthday Countdown -->
-            <div class="bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-2xl shadow-xl p-6 hover:scale-105 transition-all duration-300">
-              <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-bold text-gray-800 dark:text-white">
-                  <i class="fas fa-birthday-cake text-pink-500 mr-2"></i> Ulang Tahun
-                </h3>
-                <div class="w-3 h-3 bg-pink-500 rounded-full animate-pulse"></div>
-              </div>
-              <div id="countdown" class="text-center"></div>
-            </div>
-          </div>
-
-          <!-- Life Progress Visualization -->
-          <div class="bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-2xl shadow-xl p-8 mb-8">
-            <h3 class="text-2xl font-bold text-gray-800 dark:text-white mb-6">
-              <i class="fas fa-chart-line text-green-500 mr-3"></i> Visualisasi Perjalanan Hidup
-            </h3>
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <div>
-                <canvas id="lifeChart" width="400" height="200"></canvas>
-              </div>
-              <div>
-                <canvas id="ageBreakdownChart" width="400" height="200"></canvas>
-              </div>
-            </div>
-          </div>
-
-          <!-- Daily Horoscope -->
-          <div id="dailyHoroscope" class="mb-8"></div>
-
-          <!-- Life Achievements Timeline -->
-          <div class="bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-2xl shadow-xl p-8 mb-8">
-            <h3 class="text-2xl font-bold text-gray-800 dark:text-white mb-6">
-              <i class="fas fa-trophy text-yellow-500 mr-3"></i> Pencapaian Hidup
-            </h3>
-            <div id="achievementsTimeline" class="space-y-4"></div>
-          </div>
-
-          <!-- Personal Stats -->
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            <div class="bg-gradient-to-br from-red-400 to-pink-500 text-white p-6 rounded-2xl text-center shadow-xl">
-              <i class="fas fa-heartbeat text-3xl mb-3"></i>
-              <div class="text-2xl font-bold" id="heartbeats">2,500,000,000</div>
-              <div class="text-sm opacity-90" data-lang="heartbeats">Detak Jantung</div>
-            </div>
-            <div class="bg-gradient-to-br from-blue-400 to-cyan-500 text-white p-6 rounded-2xl text-center shadow-xl">
-              <i class="fas fa-lungs text-3xl mb-3"></i>
-              <div class="text-2xl font-bold" id="breaths">650,000,000</div>
-              <div class="text-sm opacity-90" data-lang="breaths">Napas</div>
-            </div>
-            <div class="bg-gradient-to-br from-green-400 to-emerald-500 text-white p-6 rounded-2xl text-center shadow-xl">
-              <i class="fas fa-moon text-3xl mb-3"></i>
-              <div class="text-2xl font-bold" id="sleepHours">75,000</div>
-              <div class="text-sm opacity-90" data-lang="sleep_hours">Jam Tidur</div>
-            </div>
-            <div class="bg-gradient-to-br from-purple-400 to-indigo-500 text-white p-6 rounded-2xl text-center shadow-xl">
-              <i class="fas fa-utensils text-3xl mb-3"></i>
-              <div class="text-2xl font-bold" id="meals">75,000</div>
-              <div class="text-sm opacity-90" data-lang="meals">Makanan</div>
-            </div>
-          </div>
-
-          <!-- Share & Export Section -->
-          <div class="bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-2xl shadow-xl p-8">
-            <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-6 text-center">
-              <i class="fas fa-share-alt text-blue-500 mr-2"></i> Bagikan Hasil Anda
-            </h3>
-            <div class="flex flex-wrap justify-center gap-4">
-              <button onclick="shareToFacebook()" class="bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-xl transition duration-300 transform hover:scale-105">
-                <i class="fab fa-facebook-f mr-2"></i> <span data-lang="facebook">Facebook</span>
-              </button>
-              <button onclick="shareToTwitter()" class="bg-blue-400 hover:bg-blue-500 text-white py-3 px-6 rounded-xl transition duration-300 transform hover:scale-105">
-                <i class="fab fa-twitter mr-2"></i> <span data-lang="twitter">Twitter</span>
-              </button>
-              <button onclick="shareToWhatsApp()" class="bg-green-500 hover:bg-green-600 text-white py-3 px-6 rounded-xl transition duration-300 transform hover:scale-105">
-                <i class="fab fa-whatsapp mr-2"></i> <span data-lang="whatsapp">WhatsApp</span>
-              </button>
-              <button onclick="exportToPDF()" class="bg-red-500 hover:bg-red-600 text-white py-3 px-6 rounded-xl transition duration-300 transform hover:scale-105">
-                <i class="fas fa-file-pdf mr-2"></i> <span data-lang="export_pdf">Export PDF</span>
-              </button>
-              <button onclick="downloadAsImage()" class="bg-purple-500 hover:bg-purple-600 text-white py-3 px-6 rounded-xl transition duration-300 transform hover:scale-105">
-                <i class="fas fa-image mr-2"></i> <span data-lang="download_image">Download Gambar</span>
-              </button>
-            </div>
-          </div>
+        <div class="inputbar__field">
+          <label for="profileName" class="mono lbl" data-i18n="name_label">SUBJECT NAME (OPTIONAL)</label>
+          <input type="text" id="profileName" maxlength="40" placeholder="—" />
+          <div class="inputbar__hint mono" data-i18n="name_hint">UNTUK SERTIFIKAT &amp; ARSIP</div>
         </div>
 
-        <!-- History Section -->
-        <div class="mt-8">
-          <div class="flex justify-between items-center mb-6">
-            <h3 class="text-2xl font-bold text-gray-800 dark:text-white">
-              <i class="fas fa-history mr-3 text-purple-500"></i> Riwayat Perhitungan
-            </h3>
-            <button onclick="clearAllHistory()" 
-                    class="text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300 flex items-center px-4 py-2 rounded-xl bg-white/80 dark:bg-gray-800/80 backdrop-blur-md transition-all duration-300 hover:scale-105">
-              <i class="fas fa-trash-alt mr-2"></i> Hapus Semua
-            </button>
-          </div>
-          <div id="calculationHistory" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <!-- History items will be inserted here -->
-          </div>
-        </div>
-      </div>
-
-      <!-- Birth Date Calculator Tab -->
-      <div id="birthCalculator" class="tab-panel hidden">
-        <div class="bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-2xl shadow-2xl p-8">
-          <div class="text-center mb-8">
-            <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-4">
-              <i class="fas fa-calendar-day text-purple-500 mr-3"></i> Masukkan Umur Anda
-            </h2>
-            <p class="text-gray-600 dark:text-gray-300">Temukan tanggal lahir berdasarkan umur</p>
-          </div>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg shadow-sm">
-              <label for="years" class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2" data-lang="years_label">
-                <i class="fas fa-calendar-alt mr-1"></i> Tahun
-              </label>
-              <input 
-                type="number" 
-                id="years" 
-                min="0"
-                placeholder="0"
-                class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 dark:text-white shadow-sm focus:ring-2 focus:ring-purple-500 transition" 
-              />
-            </div>
-            <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg shadow-sm">
-              <label for="months" class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2" data-lang="months_label">
-                <i class="fas fa-calendar-day mr-1"></i> Bulan
-              </label>
-              <input 
-                type="number" 
-                id="months" 
-                min="0"
-                max="11"
-                placeholder="0"
-                class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 dark:text-white shadow-sm focus:ring-2 focus:ring-purple-500 transition" 
-              />
-            </div>
-            <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg shadow-sm">
-              <label for="days" class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2" data-lang="days_label">
-                <i class="fas fa-clock mr-1"></i> Hari
-              </label>
-              <input 
-                type="number" 
-                id="days" 
-                min="0"
-                max="30"
-                placeholder="0"
-                class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 dark:text-white shadow-sm focus:ring-2 focus:ring-purple-500 transition" 
-              />
-            </div>
-          </div>
-
-          <div class="mb-6 bg-gray-50 dark:bg-gray-700 p-4 rounded-lg shadow-sm">
-            <label for="ageInput" class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2" data-lang="age_format_label">
-              <i class="fas fa-keyboard mr-1"></i> Atau masukkan langsung format "X tahun Y bulan Z hari"
-            </label>
-            <input 
-              type="text" 
-              id="ageInput" 
-              placeholder=""
-              data-lang-placeholder="age_input_placeholder"
-              class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 dark:text-white shadow-sm focus:ring-2 focus:ring-purple-500 transition" 
-            />
-          </div>
-
-          <button id="findBirthBtn" class="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white py-4 px-6 rounded-lg shadow-md transition duration-300 font-medium text-lg" data-lang="find_birth_btn">
-            <i class="fas fa-search mr-2"></i> Cari Tanggal Lahir
+        <div class="inputbar__actions">
+          <button id="calcBtn" class="btn btn--primary">
+            <span data-i18n="calc_btn">Render Almanac</span>
+            <span class="btn__arr">→</span>
           </button>
-
-          <div id="birthResult" class="mt-8 p-6 bg-gray-50 dark:bg-gray-700 rounded-lg shadow-inner text-center text-xl font-semibold text-gray-800 dark:text-gray-100"></div>
+          <button id="saveBtn" class="btn btn--ghost" data-i18n="save_btn">
+            ↳ Save to Archive
+          </button>
         </div>
       </div>
 
-      <!-- Timeline Tab -->
-      <div id="timelineCalculator" class="tab-panel hidden">
-        <div class="bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-2xl shadow-2xl p-8">
-          <div class="text-center mb-8">
-            <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-4" data-lang="timeline_title">
-              <i class="fas fa-timeline text-purple-500 mr-3"></i> Timeline Kehidupan Anda
-            </h2>
-            <p class="text-gray-600 dark:text-gray-300" data-lang="timeline_subtitle">Jelajahi milestone penting dalam perjalanan hidup Anda</p>
-          </div>
-          <div id="lifeTimeline" class="space-y-6">
-            <!-- Timeline items will be generated here -->
-          </div>
-        </div>
+      <!-- Empty state -->
+      <div class="empty" id="emptyState">
+        <div class="empty__mark">⌛</div>
+        <p class="empty__txt" data-i18n="empty">
+          Tunggu inputmu. Almanak akan tercetak begitu kamu memberi kami
+          satu hari — hari pertamamu.
+        </p>
       </div>
 
-      <!-- Comparison Tab -->
-      <div id="comparisonCalculator" class="tab-panel hidden">
-        <div class="bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-2xl shadow-2xl p-8">
-          <div class="text-center mb-8">
-            <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-4" data-lang="comparison_title">
-              <i class="fas fa-users text-blue-500 mr-3"></i> Perbandingan Usia
-            </h2>
-            <p class="text-gray-600 dark:text-gray-300" data-lang="comparison_subtitle">Bandingkan usia Anda dengan tokoh terkenal dan selebriti</p>
-          </div>
-          <div id="ageComparison" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- Comparison cards will be generated here -->
-          </div>
-        </div>
-      </div>
+      <!-- Results -->
+      <div class="results" id="results" hidden>
 
-      <!-- Statistics Tab -->
-      <div id="statsCalculator" class="tab-panel hidden">
-        <div class="bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-2xl shadow-2xl p-8">
-          <div class="text-center mb-8">
-            <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-4" data-lang="stats_title">
-              <i class="fas fa-chart-bar text-green-500 mr-3"></i> Statistik Hidup
-            </h2>
-            <p class="text-gray-600 dark:text-gray-300" data-lang="stats_subtitle">Analisis mendalam tentang perjalanan hidup Anda</p>
+        <!-- HERO RESULT -->
+        <article class="hero-result">
+          <div class="hero-result__meta">
+            <p class="mono lbl" data-i18n="subject_lbl">SUBJECT</p>
+            <p class="hero-result__name" id="subjectName">—</p>
+            <p class="mono small" data-i18n="born_lbl">BORN</p>
+            <p class="hero-result__born" id="bornFull">—</p>
+            <p class="mono small">DAY</p>
+            <p class="hero-result__dow" id="dayOfWeek">—</p>
           </div>
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div>
-              <canvas id="lifeStatsChart" width="400" height="300"></canvas>
+
+          <div class="hero-result__big">
+            <div class="big-num">
+              <span class="big-num__val" id="bigYears">0</span>
+              <span class="big-num__lbl mono" data-i18n="years_full">YEARS COMPLETE</span>
             </div>
-            <div id="detailedStats" class="space-y-4">
-              <!-- Detailed statistics will be shown here -->
+            <div class="big-num__sub mono">
+              <span id="bigMonths">0</span>m · <span id="bigDays">0</span>d ·
+              <span id="bigHours">0</span>h · <span id="bigMins">0</span>m ·
+              <span id="bigSecs">0</span>s
             </div>
           </div>
+
+          <div class="hero-result__rule"></div>
+
+          <div class="hero-result__ticker mono" id="liveTicker">
+            <span class="tick"></span>
+            <span data-i18n="live">LIVE · counting</span>
+          </div>
+        </article>
+
+        <!-- GRID -->
+        <div class="grid">
+
+          <!-- Life Battery -->
+          <article class="card card--battery span-2">
+            <div class="card__head">
+              <h3 class="card__title" data-i18n="life_battery">Life Battery</h3>
+              <span class="mono small" id="batteryPct">0%</span>
+            </div>
+            <p class="card__sub mono small" data-i18n="battery_sub">
+              BERDASARKAN HARAPAN HIDUP 80 TAHUN
+            </p>
+            <div class="battery">
+              <div class="battery__cells" id="batteryCells"></div>
+              <div class="battery__cap"></div>
+            </div>
+            <div class="battery__legend">
+              <div>
+                <span class="mono small" data-i18n="lived">LIVED</span>
+                <span class="big" id="livedYears">0y</span>
+              </div>
+              <div class="ra">
+                <span class="mono small" data-i18n="remaining">REMAINING</span>
+                <span class="big" id="remainYears">0y</span>
+              </div>
+            </div>
+          </article>
+
+          <!-- Zodiac (expanded: western + chinese + numerology) -->
+          <article class="card card--zodiac">
+            <div class="card__head">
+              <h3 class="card__title" data-i18n="zodiac">Zodiac</h3>
+              <span class="mono small">CELESTIAL</span>
+            </div>
+            <div class="zodiac">
+              <div class="zodiac__sigil" id="zodiacSigil">♈</div>
+              <p class="zodiac__name" id="zodiacName">—</p>
+              <p class="mono small" id="zodiacRange">—</p>
+              <p class="zodiac__elem" id="zodiacElement">—</p>
+            </div>
+            <div class="zodiac__split">
+              <div>
+                <p class="mono small" data-i18n="chinese_zodiac">CHINESE ZODIAC</p>
+                <p class="zodiac__line"><span id="chineseGlyph">—</span> <span id="chineseName">—</span></p>
+                <p class="mono small" id="chineseElement">—</p>
+              </div>
+              <div>
+                <p class="mono small" data-i18n="life_path">LIFE PATH №</p>
+                <p class="zodiac__line"><span id="lifePathNum">—</span></p>
+                <p class="mono small" id="lifePathTrait">—</p>
+              </div>
+            </div>
+          </article>
+
+          <!-- Countdown -->
+          <article class="card card--countdown">
+            <div class="card__head">
+              <h3 class="card__title" data-i18n="next_bday">Next Birthday</h3>
+              <span class="mono small">COUNTDOWN</span>
+            </div>
+            <div class="countdown" id="countdownGrid">
+              <div><span class="cd-val" id="cdDays">0</span><span class="mono small">D</span></div>
+              <div><span class="cd-val" id="cdHrs">0</span><span class="mono small">H</span></div>
+              <div><span class="cd-val" id="cdMin">0</span><span class="mono small">M</span></div>
+              <div><span class="cd-val" id="cdSec">0</span><span class="mono small">S</span></div>
+            </div>
+            <p class="mono small" id="cdMessage">—</p>
+          </article>
+
+          <!-- Cosmic Odometer -->
+          <article class="card card--cosmic span-2">
+            <div class="card__head">
+              <h3 class="card__title" data-i18n="cosmic">Cosmic Odometer</h3>
+              <span class="mono small">SINCE BIRTH</span>
+            </div>
+            <ul class="odo">
+              <li>
+                <span class="odo__ico">♥</span>
+                <span class="odo__val" id="odoHeart">0</span>
+                <span class="mono small" data-i18n="heartbeats">HEARTBEATS</span>
+              </li>
+              <li>
+                <span class="odo__ico">≋</span>
+                <span class="odo__val" id="odoBreath">0</span>
+                <span class="mono small" data-i18n="breaths">BREATHS</span>
+              </li>
+              <li>
+                <span class="odo__ico">◉</span>
+                <span class="odo__val" id="odoBlink">0</span>
+                <span class="mono small" data-i18n="blinks">BLINKS</span>
+              </li>
+              <li>
+                <span class="odo__ico">☉</span>
+                <span class="odo__val" id="odoOrbit">0</span>
+                <span class="mono small" data-i18n="orbits">EARTH ORBITS</span>
+              </li>
+              <li>
+                <span class="odo__ico">☾</span>
+                <span class="odo__val" id="odoMoon">0</span>
+                <span class="mono small" data-i18n="moons">LUNAR CYCLES</span>
+              </li>
+              <li>
+                <span class="odo__ico">↻</span>
+                <span class="odo__val" id="odoSpin">0</span>
+                <span class="mono small" data-i18n="spins">EARTH SPINS</span>
+              </li>
+            </ul>
+          </article>
+
+          <!-- Time Allocation Chart -->
+          <article class="card card--alloc span-2">
+            <div class="card__head">
+              <h3 class="card__title" data-i18n="time_alloc">Time Allocated</h3>
+              <span class="mono small" data-i18n="estimate">ESTIMATE</span>
+            </div>
+            <p class="card__sub mono small" data-i18n="alloc_sub">
+              BAGAIMANA WAKTU HIDUPMU TERBAGI
+            </p>
+            <div class="alloc">
+              <div class="alloc__chart">
+                <canvas id="allocChart"></canvas>
+              </div>
+              <ul class="alloc__legend" id="allocLegend"></ul>
+            </div>
+          </article>
+
+          <!-- Numbers -->
+          <article class="card card--numbers">
+            <div class="card__head">
+              <h3 class="card__title" data-i18n="in_numbers">In Numbers</h3>
+              <span class="mono small">TOTALS</span>
+            </div>
+            <ul class="nums">
+              <li><span class="mono small" data-i18n="weeks">WEEKS</span><span class="num__v" id="numWeeks">0</span></li>
+              <li><span class="mono small" data-i18n="days">DAYS</span><span class="num__v" id="numDays">0</span></li>
+              <li><span class="mono small" data-i18n="hours">HOURS</span><span class="num__v" id="numHours">0</span></li>
+              <li><span class="mono small" data-i18n="minutes">MINUTES</span><span class="num__v" id="numMins">0</span></li>
+              <li><span class="mono small" data-i18n="seconds">SECONDS</span><span class="num__v" id="numSecs">0</span></li>
+            </ul>
+          </article>
+
+          <!-- Day-of-week trivia -->
+          <article class="card card--trivia">
+            <div class="card__head">
+              <h3 class="card__title" data-i18n="born_on">Born on a</h3>
+            </div>
+            <p class="trivia__day" id="triviaDay">—</p>
+            <p class="trivia__quote" id="triviaQuote">—</p>
+          </article>
+
+          <!-- Year Progress -->
+          <article class="card card--yearprog span-2">
+            <div class="card__head">
+              <h3 class="card__title" data-i18n="year_progress">Year Progress</h3>
+              <span class="mono small" id="yearProgYear">—</span>
+            </div>
+            <div class="yp">
+              <div class="yp__row">
+                <div class="yp__lbl">
+                  <span class="mono small" data-i18n="personal_year">PERSONAL YEAR</span>
+                  <span class="yp__hint" id="ypPersonalAge">—</span>
+                </div>
+                <div class="yp__bar"><div class="yp__fill" id="ypPersonalFill" style="width:0%"></div></div>
+                <span class="yp__pct mono" id="ypPersonalPct">0%</span>
+              </div>
+              <div class="yp__row">
+                <div class="yp__lbl">
+                  <span class="mono small" data-i18n="calendar_year">CALENDAR YEAR</span>
+                  <span class="yp__hint" id="ypCalAge">—</span>
+                </div>
+                <div class="yp__bar"><div class="yp__fill yp__fill--alt" id="ypCalFill" style="width:0%"></div></div>
+                <span class="yp__pct mono" id="ypCalPct">0%</span>
+              </div>
+              <div class="yp__row">
+                <div class="yp__lbl">
+                  <span class="mono small" data-i18n="day_progress">TODAY</span>
+                  <span class="yp__hint" id="ypDayHint">—</span>
+                </div>
+                <div class="yp__bar"><div class="yp__fill yp__fill--day" id="ypDayFill" style="width:0%"></div></div>
+                <span class="yp__pct mono" id="ypDayPct">0%</span>
+              </div>
+            </div>
+          </article>
+
+          <!-- Milestone Moments -->
+          <article class="card card--moments span-3">
+            <div class="card__head">
+              <h3 class="card__title" data-i18n="milestone_moments">Milestone Moments</h3>
+              <span class="mono small" data-i18n="round_numbers">ROUND NUMBERS</span>
+            </div>
+            <p class="card__sub mono small" data-i18n="moments_sub">
+              MOMEN ANGKA BULAT BERIKUTNYA YANG AKAN KAMU CAPAI
+            </p>
+            <ul class="moments" id="momentsList"></ul>
+          </article>
+
+          <!-- Biorhythm -->
+          <article class="card card--bio span-3">
+            <div class="card__head">
+              <h3 class="card__title" data-i18n="biorhythm">Biorhythm</h3>
+              <span class="mono small" id="bioToday">—</span>
+            </div>
+            <p class="card__sub mono small" data-i18n="bio_sub">
+              SIKLUS HARIAN · FISIK 23H · EMOSIONAL 28H · INTELEKTUAL 33H
+            </p>
+            <div class="bio">
+              <div class="bio__chart">
+                <canvas id="bioChart"></canvas>
+              </div>
+              <ul class="bio__legend" id="bioLegend"></ul>
+            </div>
+          </article>
+
+          <!-- Horoscope -->
+          <article class="card card--horoscope span-3">
+            <div class="card__head">
+              <h3 class="card__title" data-i18n="horoscope_title">Daily Note · Horoscope</h3>
+              <span class="mono small" id="horoDate">—</span>
+            </div>
+            <p class="horo" id="horoText">—</p>
+          </article>
+
+        </div>
+
+        <!-- ACTIONS -->
+        <div class="actions">
+          <button class="btn btn--ghost" id="shareTwitter">↳ Twitter</button>
+          <button class="btn btn--ghost" id="shareWA">↳ WhatsApp</button>
+          <button class="btn btn--ghost" id="copyLink">↳ <span data-i18n="copy_link">Copy Link</span></button>
+          <button class="btn btn--ghost" id="exportPDF">↳ <span data-i18n="export_pdf">PDF Certificate</span></button>
+          <button class="btn btn--ghost" id="exportImg">↳ <span data-i18n="export_img">Save Image</span></button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ============= TAB · REVERSE ============= -->
+    <section class="panel" data-panel="reverse">
+      <div class="reverse">
+        <div class="reverse__intro">
+          <p class="mono lbl">PROCEDURE 02</p>
+          <h2 class="reverse__h" data-i18n="reverse_h">If you only know the age,<br/>we'll find the day.</h2>
+          <p class="reverse__sub" data-i18n="reverse_sub">
+            Masukkan umur dalam tahun, bulan, dan hari. Almanak akan
+            menelusuri kalender mundur untuk menemukan tanggal lahir.
+          </p>
+        </div>
+        <div class="reverse__form">
+          <div class="reverse__triple">
+            <label class="reverse__cell">
+              <span class="mono lbl" data-i18n="years">YEARS</span>
+              <input type="number" id="rYears" min="0" max="150" placeholder="0">
+            </label>
+            <label class="reverse__cell">
+              <span class="mono lbl" data-i18n="months">MONTHS</span>
+              <input type="number" id="rMonths" min="0" max="11" placeholder="0">
+            </label>
+            <label class="reverse__cell">
+              <span class="mono lbl" data-i18n="days">DAYS</span>
+              <input type="number" id="rDays" min="0" max="30" placeholder="0">
+            </label>
+          </div>
+          <button id="reverseBtn" class="btn btn--primary">
+            <span data-i18n="reverse_btn">Compute Birth Date</span><span class="btn__arr">→</span>
+          </button>
+          <div class="reverse__out" id="reverseOut" hidden>
+            <p class="mono lbl" data-i18n="result_lbl">RESULT</p>
+            <p class="reverse__date" id="reverseDate">—</p>
+            <p class="mono small" id="reverseExtra">—</p>
+          </div>
         </div>
       </div>
-    </div>
+    </section>
 
-    <!-- Easter Egg: Floating Birthday Cake -->
-    <div id="floatingCake" class="fixed bottom-10 right-10 text-6xl animate-float cursor-pointer hidden" onclick="triggerBirthdayAnimation()">
-      🎂
+    <!-- ============= TAB · TIMELINE ============= -->
+    <section class="panel" data-panel="timeline">
+      <div class="tl-head">
+        <p class="mono lbl">PROCEDURE 03</p>
+        <h2 class="reverse__h" data-i18n="tl_h">Milestones &amp; the road ahead.</h2>
+        <p class="reverse__sub" data-i18n="tl_sub">
+          Hitung dulu di tab Chronograph. Timeline akan terisi otomatis.
+        </p>
+      </div>
+      <ol class="timeline" id="timelineList"></ol>
+    </section>
+
+    <!-- ============= TAB · COSMOS ============= -->
+    <section class="panel" data-panel="cosmos">
+      <div class="tl-head">
+        <p class="mono lbl">PROCEDURE 04</p>
+        <h2 class="reverse__h" data-i18n="cs_h">Comparisons across time.</h2>
+        <p class="reverse__sub" data-i18n="cs_sub">
+          Posisi usiamu di antara peristiwa, tokoh, dan konstanta semesta.
+        </p>
+      </div>
+      <div class="cosmos" id="cosmosList"></div>
+    </section>
+
+    <!-- ============= TAB · LIFE IN WEEKS ============= -->
+    <section class="panel" data-panel="weeks">
+      <div class="tl-head">
+        <p class="mono lbl">PROCEDURE 05</p>
+        <h2 class="reverse__h" data-i18n="wk_h">Your life in weeks.</h2>
+        <p class="reverse__sub" data-i18n="wk_sub">
+          Setiap titik adalah satu minggu. 90 tahun · 4,680 minggu. Yang
+          sudah lewat ditandai emas — yang sekarang berdetak di tengah grid.
+        </p>
+      </div>
+      <div class="weeks-meta" id="weeksMeta">
+        <div><span class="mono small" data-i18n="weeks_lived">WEEKS LIVED</span><span class="weeks-meta__v" id="weeksLived">0</span></div>
+        <div><span class="mono small" data-i18n="weeks_left">WEEKS LEFT</span><span class="weeks-meta__v" id="weeksLeft">0</span></div>
+        <div><span class="mono small" data-i18n="weeks_pct">PROGRESS</span><span class="weeks-meta__v" id="weeksPct">0%</span></div>
+      </div>
+      <div class="weeks-grid" id="weeksGrid"></div>
+      <div class="weeks-legend">
+        <span><i class="dot dot--on"></i> <span data-i18n="weeks_lived_l">Lived</span></span>
+        <span><i class="dot dot--now"></i> <span data-i18n="weeks_now_l">This week</span></span>
+        <span><i class="dot dot--future"></i> <span data-i18n="weeks_future_l">Yet to come</span></span>
+      </div>
+    </section>
+
+    <!-- ============= TAB · COMPARE ============= -->
+    <section class="panel" data-panel="compare">
+      <div class="tl-head">
+        <p class="mono lbl">PROCEDURE 06</p>
+        <h2 class="reverse__h" data-i18n="cmp_h">Two subjects, side by side.</h2>
+        <p class="reverse__sub" data-i18n="cmp_sub">
+          Bandingkan dua tanggal lahir — siapa lebih dulu, selisih ke detik,
+          generasi, dan jarak ulang tahun di kalender.
+        </p>
+      </div>
+
+      <div class="cmp-form">
+        <div class="cmp-pair">
+          <label class="cmp-cell">
+            <span class="mono lbl" data-i18n="subject_a">SUBJECT A</span>
+            <input type="text" id="cmpNameA" placeholder="Name A" maxlength="40">
+            <input type="date" id="cmpDobA">
+          </label>
+          <div class="cmp-vs">
+            <span class="mono small">VS</span>
+          </div>
+          <label class="cmp-cell">
+            <span class="mono lbl" data-i18n="subject_b">SUBJECT B</span>
+            <input type="text" id="cmpNameB" placeholder="Name B" maxlength="40">
+            <input type="date" id="cmpDobB">
+          </label>
+        </div>
+        <button id="cmpBtn" class="btn btn--primary">
+          <span data-i18n="cmp_btn">Compare</span><span class="btn__arr">→</span>
+        </button>
+      </div>
+
+      <div class="cmp-out" id="cmpOut" hidden>
+        <div class="cmp-versus">
+          <div class="cmp-side" id="cmpSideA">
+            <p class="mono lbl">SUBJECT A</p>
+            <p class="cmp-side__name" id="cmpOutNameA">—</p>
+            <p class="cmp-side__age" id="cmpOutAgeA">—</p>
+            <p class="mono small" id="cmpOutDobA">—</p>
+            <p class="mono small" id="cmpOutGenA">—</p>
+          </div>
+          <div class="cmp-versus__bar">
+            <span class="cmp-versus__diff" id="cmpDiff">—</span>
+            <span class="mono small" data-i18n="diff_lbl">DIFFERENCE</span>
+          </div>
+          <div class="cmp-side" id="cmpSideB">
+            <p class="mono lbl">SUBJECT B</p>
+            <p class="cmp-side__name" id="cmpOutNameB">—</p>
+            <p class="cmp-side__age" id="cmpOutAgeB">—</p>
+            <p class="mono small" id="cmpOutDobB">—</p>
+            <p class="mono small" id="cmpOutGenB">—</p>
+          </div>
+        </div>
+        <div class="cmp-grid">
+          <div class="cmp-stat"><span class="mono small" data-i18n="seconds_apart">SECONDS APART</span><span class="cmp-stat__v" id="cmpSecsApart">—</span></div>
+          <div class="cmp-stat"><span class="mono small" data-i18n="bday_gap">BIRTHDAY GAP</span><span class="cmp-stat__v" id="cmpBdayGap">—</span></div>
+          <div class="cmp-stat"><span class="mono small" data-i18n="same_zodiac">ZODIAC MATCH</span><span class="cmp-stat__v" id="cmpZodiacMatch">—</span></div>
+          <div class="cmp-stat"><span class="mono small" data-i18n="same_chinese">CHINESE MATCH</span><span class="cmp-stat__v" id="cmpChineseMatch">—</span></div>
+        </div>
+        <p class="cmp-verdict" id="cmpVerdict">—</p>
+      </div>
+    </section>
+
+    <!-- ============= TAB · ARCHIVE ============= -->
+    <section class="panel" data-panel="archive">
+      <div class="tl-head">
+        <p class="mono lbl">PROCEDURE 07</p>
+        <h2 class="reverse__h" data-i18n="ar_h">The archive.</h2>
+        <p class="reverse__sub" data-i18n="ar_sub">
+          Kumpulan subjek yang pernah disusun almanaknya. Tersimpan lokal.
+        </p>
+      </div>
+      <div class="archive">
+        <div class="archive__bar">
+          <span class="mono small" id="archiveCount">0 ENTRIES</span>
+          <button class="btn btn--ghost btn--small" id="clearArchive" data-i18n="clear_all">↳ Clear All</button>
+        </div>
+        <ul class="archive__list" id="archiveList"></ul>
+      </div>
+    </section>
+
+    <!-- ============= COLOPHON ============= -->
+    <footer class="colophon">
+      <div class="colophon__rule"></div>
+      <div class="colophon__row">
+        <div>
+          <p class="mono small">COLOPHON</p>
+          <p class="colophon__t">The Age Almanac</p>
+        </div>
+        <div>
+          <p class="mono small" data-i18n="set_in">SET IN</p>
+          <p>Fraunces &amp; JetBrains Mono</p>
+        </div>
+        <div>
+          <p class="mono small" data-i18n="published">PUBLISHED BY</p>
+          <p>Erzam Bayu · MMXXVI</p>
+        </div>
+        <div>
+          <p class="mono small">№</p>
+          <p class="mono" id="footerEdition">001 / ∞</p>
+        </div>
+      </div>
+    </footer>
+
+  </main>
+
+  <!-- Toast -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <!-- Birthday confetti overlay -->
+  <div class="bday" id="bdayOverlay" hidden>
+    <div class="bday__inner">
+      <p class="mono lbl">SPECIAL EDITION</p>
+      <h2 class="bday__h" data-i18n="bday_title">Happy Birthday.</h2>
+      <p data-i18n="bday_sub">Hari ini almanakmu berdetak satu tahun lebih panjang.</p>
+      <button class="btn btn--primary" id="bdayClose" data-i18n="bday_close">Continue →</button>
     </div>
   </div>
 
-  <!-- Birthday Animation Overlay -->
-  <div id="birthdayOverlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center">
-    <div class="text-center text-white">
-      <div class="text-8xl mb-4 animate-bounce">🎉</div>
-      <h2 class="text-4xl font-bold mb-4">Selamat Ulang Tahun!</h2>
-      <p class="text-xl">Semoga tahun ini membawa kebahagiaan dan kesuksesan</p>
-      <button onclick="closeBirthdayAnimation()" class="mt-6 bg-pink-500 hover:bg-pink-600 text-white py-3 px-6 rounded-xl">
-        Terima Kasih 💕
-      </button>
+  <!-- Settings Drawer -->
+  <aside class="drawer" id="drawer" hidden aria-label="Settings">
+    <div class="drawer__scrim" data-drawer-close></div>
+    <div class="drawer__panel">
+      <div class="drawer__head">
+        <p class="mono lbl">SETTINGS · PROCEDURE 00</p>
+        <button class="drawer__x" data-drawer-close aria-label="Close">✕</button>
+      </div>
+      <h2 class="drawer__h" data-i18n="settings_h">Configure your almanac.</h2>
+
+      <section class="drawer__section">
+        <p class="mono small" data-i18n="life_expect">LIFE EXPECTANCY</p>
+        <p class="drawer__hint" data-i18n="life_expect_hint">
+          Mengubah seluruh kalkulasi battery, weeks grid, dan remaining time.
+        </p>
+        <div class="slider">
+          <input type="range" id="lifeExpect" min="50" max="120" step="1" value="80">
+          <div class="slider__track"></div>
+          <div class="slider__bubbles">
+            <span>50</span><span>70</span><span>80</span><span>100</span><span>120</span>
+          </div>
+        </div>
+        <p class="slider__val">
+          <span class="big" id="lifeExpectVal">80</span>
+          <span class="mono small" data-i18n="years_expectancy">YEARS</span>
+        </p>
+      </section>
+
+      <section class="drawer__section">
+        <p class="mono small" data-i18n="working_hours">WORKING DAY HOURS</p>
+        <p class="drawer__hint" data-i18n="working_hours_hint">
+          Mempengaruhi alokasi waktu di chart "Time Allocated".
+        </p>
+        <div class="seg-group">
+          <button class="seg-pill" data-work="6">6h</button>
+          <button class="seg-pill is-active" data-work="8">8h</button>
+          <button class="seg-pill" data-work="10">10h</button>
+          <button class="seg-pill" data-work="12">12h</button>
+        </div>
+      </section>
+
+      <section class="drawer__section">
+        <p class="mono small" data-i18n="motion">MOTION</p>
+        <div class="seg-group">
+          <button class="seg-pill is-active" data-motion="full" data-i18n="motion_full">Full</button>
+          <button class="seg-pill" data-motion="reduced" data-i18n="motion_reduced">Reduced</button>
+          <button class="seg-pill" data-motion="off" data-i18n="motion_off">Off</button>
+        </div>
+      </section>
+
+      <section class="drawer__section drawer__danger">
+        <p class="mono small" data-i18n="danger_zone">DANGER ZONE</p>
+        <p class="drawer__hint" data-i18n="danger_hint">
+          Hapus semua data lokal: arsip, pengaturan, dan preferensi bahasa.
+        </p>
+        <button class="btn btn--ghost" id="resetAllBtn" data-i18n="reset_all">↳ Reset Everything</button>
+      </section>
+
+      <div class="drawer__foot">
+        <p class="mono small">v 2.0 · MMXXVI</p>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Shortcuts Overlay -->
+  <div class="shortcuts" id="shortcuts" hidden>
+    <div class="shortcuts__scrim" data-shortcuts-close></div>
+    <div class="shortcuts__panel">
+      <div class="shortcuts__head">
+        <p class="mono lbl">QUICK REFERENCE</p>
+        <button class="drawer__x" data-shortcuts-close aria-label="Close">✕</button>
+      </div>
+      <h2 class="drawer__h" data-i18n="shortcuts_h">Keyboard shortcuts.</h2>
+      <ul class="kbd-list">
+        <li><kbd>/</kbd><span data-i18n="kb_focus">Fokus tanggal lahir</span></li>
+        <li><kbd>Enter</kbd><span data-i18n="kb_calc">Hitung almanak</span></li>
+        <li><kbd>1</kbd>–<kbd>7</kbd><span data-i18n="kb_tabs">Pindah tab</span></li>
+        <li><kbd>T</kbd><span data-i18n="kb_theme">Toggle tema</span></li>
+        <li><kbd>L</kbd><span data-i18n="kb_lang">Toggle bahasa</span></li>
+        <li><kbd>S</kbd><span data-i18n="kb_save">Simpan ke arsip</span></li>
+        <li><kbd>?</kbd><span data-i18n="kb_help">Tampilkan menu ini</span></li>
+        <li><kbd>Esc</kbd><span data-i18n="kb_close">Tutup overlay</span></li>
+      </ul>
     </div>
   </div>
 
-  <!-- Scripts -->
   <script src="localization.js"></script>
   <script src="script.js"></script>
-  
-  <!-- Initialize particles -->
-  <script>
-    particlesJS('particles-js', {
-      particles: {
-        number: { value: 80, density: { enable: true, value_area: 800 } },
-        color: { value: ['#3b82f6', '#8b5cf6', '#ec4899', '#10b981'] },
-        shape: { 
-          type: 'circle',
-          stroke: { width: 0, color: '#000000' }
-        },
-        opacity: { 
-          value: 0.5, 
-          random: false,
-          anim: { enable: false, speed: 1, opacity_min: 0.1, sync: false }
-        },
-        size: { 
-          value: 3, 
-          random: true,
-          anim: { enable: false, speed: 40, size_min: 0.1, sync: false }
-        },
-        line_linked: {
-          enable: true,
-          distance: 150,
-          color: '#3b82f6',
-          opacity: 0.4,
-          width: 1
-        },
-        move: {
-          enable: true,
-          speed: 2,
-          direction: 'none',
-          random: false,
-          straight: false,
-          out_mode: 'out',
-          bounce: false,
-        }
-      },
-      interactivity: {
-        detect_on: 'canvas',
-        events: {
-          onhover: { enable: true, mode: 'repulse' },
-          onclick: { enable: true, mode: 'push' },
-          resize: true
-        }
-      },
-      retina_detect: true
-    });
-  </script>
 </body>
 </html>
